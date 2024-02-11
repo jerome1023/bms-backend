@@ -11,15 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('official', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('firstname');
+            $table->string('middlename');
             $table->string('lastname');
-            $table->string('gender')->nullable();
-            $table->string('email')->unique();
-            $table->string('password');
-            $table->string('address')->nullable();
-            $table->string('role_id');
+            $table->string('gender');
+            $table->string('position');
+            $table->date('birthdate');
+            $table->foreignUuid('sitio_id')->constrained('sitio');
+            $table->date('start_term');
+            $table->date('end_term');
             $table->boolean('archive_status');
             $table->timestamps();
         });
@@ -30,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('official');
     }
 };
