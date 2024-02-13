@@ -14,6 +14,7 @@ class TrustHosts extends Middleware
     public function hosts(): array
     {
         return [
+            env('FRONTEND_BASE_URL'),
             $this->allSubdomainsOfApplicationUrl(),
         ];
     }

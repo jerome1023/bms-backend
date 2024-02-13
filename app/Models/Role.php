@@ -15,7 +15,7 @@ class Role extends Model
      * @var string
      */
 
-    protected $table = 'role';
+    // protected $table = 'role';
 
     protected $primaryKey = 'uuid';
 
