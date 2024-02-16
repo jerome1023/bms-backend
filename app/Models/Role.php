@@ -17,8 +17,7 @@ class Role extends Model
 
     // protected $table = 'role';
 
-    protected $primaryKey = 'uuid';
-
+    protected $keyType = 'string';
     public $incrementing = false;
 
     protected $fillable = [

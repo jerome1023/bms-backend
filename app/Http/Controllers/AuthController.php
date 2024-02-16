@@ -29,8 +29,10 @@ class AuthController extends Controller
             ], Response::HTTP_UNAUTHORIZED);
         }
 
+        // dd($user->id);
         return response()->json([
             'token' => $user->createToken('Web API')->plainTextToken,
+            'id' => $user->id,
             'firstname' => $user->firstname,
             'lastname' => $user->lastname,
             'role' => $user->role_id,
@@ -40,13 +42,20 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
-        $validateUser = Validator::make($request->all(), [
+        $validateRules = [
             'firstname' => 'required|string',
             'lastname' => 'required|string',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:6',
             'role' => 'required|string|exists:roles,name'
-        ]);
+        ];
+        
+        if ($request->role == 'User') {
+            $validateRules['address'] = 'required|string';
+            $validateRules['gender'] = 'required|string';
+        }
+        
+        $validateUser = Validator::make($request->all(), $validateRules);
 
         if ($validateUser->fails()) {
             return response()->json([
