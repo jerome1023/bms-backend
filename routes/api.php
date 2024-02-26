@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\OfficialController;
+use App\Http\Controllers\SitioController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -28,5 +30,21 @@ Route::controller(AuthController::class)->group(function () {
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::controller(UserController::class)->prefix('/users')->group(function () {
         Route::get('/{id}', 'view');
+    });
+
+    Route::controller(SitioController::class)->prefix('/sitio')->group(function () {
+        Route::get('/all', 'index');
+        Route::get('/view/{name}', 'show');
+        Route::post('/create', 'store');
+        Route::put('/update/{name}', 'update');
+        Route::delete('/delete/{name}', 'destroy');
+    });
+
+    Route::controller(OfficialController::class)->prefix('/official')->group(function () {
+        Route::get('/all', 'index');
+        Route::get('/view/{name}', 'show');
+        Route::post('/create', 'store');
+        Route::put('/update/{name}', 'update');
+        Route::delete('/delete/{name}', 'destroy');
     });
 });
