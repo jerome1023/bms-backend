@@ -9,7 +9,7 @@ class Sitio extends Model
 {
     use HasFactory;
 
-    protected $table = 'sitio';
+    // protected $table = 'sitio';
     protected $keyType = 'string';
     public $incrementing = false;
     public $timestamps = false;

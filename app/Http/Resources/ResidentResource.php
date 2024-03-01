@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class OfficialResource extends JsonResource
+class ResidentResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -20,11 +20,16 @@ class OfficialResource extends JsonResource
             'middlename' => $this->middlename,
             'lastname' => $this->lastname,
             'gender' => $this->gender,
-            'position' => $this->position,
             'birthdate' => $this->birthdate,
+            'birthplace' => $this->birthplace,
+            'civil_status' => $this->civil_status,
+            'religion' => $this->religion,
+            'educational_attainment' => $this->educational_attainment,
             'sitio' => new SitioResource($this->sitio),
-            'start_term' => $this->start_term,
-            'end_term' => $this->end_term,
+            'house_number' => $this->house_number,
+            'occupation' => $this->occupation,
+            'nationality' => $this->nationality,
+            'voter_status' => $this->voter_status,
             'archive_status' => $this->archive_status,
         ];
     }

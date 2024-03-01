@@ -11,12 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('transaction', function (Blueprint $table) {
+        Schema::create('requests', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignUuid('user_id')->constrained('users');
-            $table->foreignUuid('document_id')->constrained('document');
+            $table->integer('age');
+            $table->foreignUuid('document_id')->constrained('documents');
             $table->string('purpose');
-            $table->integer('price');
+            $table->foreignUuid('sitio_id')->constrained('sitios');
+            $table->integer('income')->nullable();
+            $table->string('status');
             $table->boolean('archive_status');
             $table->timestamps();
         });
@@ -27,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('transaction');
+        Schema::dropIfExists('requests');
     }
 };

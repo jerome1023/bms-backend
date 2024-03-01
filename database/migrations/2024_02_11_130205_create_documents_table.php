@@ -11,9 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('sitio', function (Blueprint $table) {
+        Schema::create('documents', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('name');
+            $table->integer('price');
         });
     }
 
@@ -22,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('sitio');
+        Schema::dropIfExists('documents');
     }
 };

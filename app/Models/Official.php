@@ -9,7 +9,7 @@ class Official extends Model
 {
     use HasFactory;
 
-    protected $table = 'official';
+    // protected $table = 'official';
     protected $keyType = 'string';
     public $incrementing = false;
 
@@ -29,6 +29,6 @@ class Official extends Model
 
     public function sitio()
     {
-        return $this->belongsTo(Sitio::class);
+        return $this->belongsTo(Sitio::class, 'sitio_id');
     }
 }

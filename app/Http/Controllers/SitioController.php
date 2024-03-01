@@ -27,10 +27,17 @@ class SitioController extends Controller
         ], 200);
     }
 
-    public function show($name)
+    public function view($name)
     {
-        $sitios = Sitio::where('name', $name)->get();
-        $sitiosResource = SitioResource::collection($sitios);
+        $sitioName = Sitio::where('name', $name)->get();
+        if($sitioName->isEmpty()){
+            return response()->json([
+                'status' => 404,
+                'message' => 'No data found'
+            ], 404);
+        }
+
+        $sitiosResource = SitioResource::collection($sitioName);
         return response()->json([
             'status' => 201,
             'message' => 'Data retrieved successfully',
