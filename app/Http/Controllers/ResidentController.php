@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Resident;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ResidentRequest;
 use App\Http\Resources\ResidentResource;
 use App\Models\Sitio;
 use Illuminate\Http\Request;
@@ -16,79 +17,26 @@ class ResidentController extends Controller
     public function index()
     {
         $resident = Resident::all();
-        $data = ResidentResource::collection($resident);
         return response()->json([
             'status' => 201,
             'message' => 'Data retrieved successfully',
-            'data' => $data
+            'data' => ResidentResource::collection($resident)
         ], 200);
     }
 
-    public function view($name)
+    public function store(ResidentRequest $request)
     {
-        $resident = Resident::where('lastname', $name)->get();
-        if ($resident->isEmpty()) {
-            return response()->json([
-                'status' => 404,
-                'message' => 'No data found'
-            ], 404);
-        }
-
-        $residentResource = ResidentResource::collection($resident);
-        return response()->json([
-            'status' => 201,
-            'message' => 'Data retrieved successfully',
-            'data' => $residentResource
-        ], 200);
-    }
-
-    public function store(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'firstname' => 'required|string|max:255',
-            'middlename' => 'required|string|max:255',
-            'lastname' => 'required|string|max:255',
-            'gender' => 'required|string|max:255',
-            'birthdate' => 'required|date',
-            'birthplace' => 'required|string|max:255',
-            'civil_status' => 'required|string|max:255',
-            'religion' => 'required|string|max:255',
-            'educational_attainment' => 'required|string|max:255',
-            'sitio_id' => 'required|string|max:255',
-            'house_number' => 'required|string|max:255',
-            'occupation' => 'required|string|max:255',
-            'nationality' => 'required|string|max:255',
-            'voter_status' => 'required|boolean'
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => 400,
-                'message' => 'Validation failed',
-                'errors' => $validator->errors()
-            ], 400);
-        }
-
-        $existingResident = Resident::where([
-            'firstname' => $request->firstname,
-            'middlename' => $request->middlename,
-            'lastname' => $request->lastname,
-        ])->exists();
-
-        if ($existingResident) {
+        if ($this->isExist($request)) {
             return response()->json([
                 'status' => 409,
                 'message' => 'Resident with the same name already exists'
-            ], 409);
+            ]);
         }
 
-        $sitio = Sitio::where('id', $request->sitio_id)->first();
+        $sitio = $this->findDataOrFail(Sitio::class, $request->sitio_id, 'Sitio Not Found');
 
-        if (!$sitio) {
-            return response()->json([
-                'status' => 404,
-                'message' => 'Sitio not found'
-            ], 404);
+        if ($sitio instanceof \Illuminate\Http\JsonResponse) {
+            return $sitio;
         }
 
         Resident::create([
@@ -116,62 +64,40 @@ class ResidentController extends Controller
         ], 201);
     }
 
-    public function update(Request $request, $id)
+    public function show($id)
     {
-        $validator = Validator::make($request->all(), [
-            'firstname' => 'required|string|max:255',
-            'middlename' => 'required|string|max:255',
-            'lastname' => 'required|string|max:255',
-            'gender' => 'required|string|max:255',
-            'birthdate' => 'required|date',
-            'birthplace' => 'required|string|max:255',
-            'civil_status' => 'required|string|max:255',
-            'religion' => 'required|string|max:255',
-            'educational_attainment' => 'required|string|max:255',
-            'sitio_id' => 'required|string|max:255',
-            'house_number' => 'required|string|max:255',
-            'occupation' => 'required|string|max:255',
-            'nationality' => 'required|string|max:255',
-            'voter_status' => 'required|boolean'
-        ]);
+        $resident = $this->findDataOrFail(Resident::class, $id);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => 400,
-                'message' => 'Validation failed',
-                'errors' => $validator->errors()
-            ], 400);
-        }
-        
-        $resident = Resident::where('id', $id)->first();
-        if (!$resident) {
-            return response()->json([
-                'status' => 404,
-                'message' => 'Resident not found'
-            ], 404);
-        }
-        
-        $exists = DB::table('resident')
-            ->where('id', '<>', $id)
-            ->where('firstname', $request->firstname)
-            ->where('middlename', $request->middlename)
-            ->where('lastname', $request->lastname)
-            ->exists();
-
-        if ($exists) {
-            return response()->json([
-                'status' => 400,
-                'message' => 'Resident name already exists.'
-            ], 400);
+        if ($resident instanceof \Illuminate\Http\JsonResponse) {
+            return $resident;
         }
 
-        $sitio = Sitio::where('id', $request->sitio_id)->first();
+        return response()->json([
+            'status' => 201,
+            'message' => 'Data retrieved successfully',
+            'data' => new ResidentResource($resident)
+        ], 200);
+    }
 
-        if (!$sitio) {
+    public function update(ResidentRequest $request, $id)
+    {
+        $resident = $this->findDataOrFail(Resident::class, $id);
+
+        if ($resident instanceof \Illuminate\Http\JsonResponse) {
+            return $resident;
+        }
+
+        if ($this->isExist($request, $id)) {
             return response()->json([
-                'status' => 404,
-                'message' => 'Sitio not found'
-            ], 404);
+                'status' => 409,
+                'message' => 'Resident with the same name already exists'
+            ], 409);
+        }
+
+        $sitio = $this->findDataOrFail(Sitio::class, $request->sitio_id, 'Sitio Not Found');
+
+        if ($sitio instanceof \Illuminate\Http\JsonResponse) {
+            return $sitio;
         }
 
         $resident->update([
@@ -201,12 +127,10 @@ class ResidentController extends Controller
 
     public function destroy($id)
     {
-        $resident = Resident::where('id', $id)->first();
-        if (!$resident) {
-            return response()->json([
-                'status' => 404,
-                'message' => 'Resident not found'
-            ], 404);
+        $resident = $this->findDataOrFail(Resident::class, $id);
+
+        if ($resident instanceof \Illuminate\Http\JsonResponse) {
+            return $resident;
         }
 
         $resident->delete();
@@ -215,5 +139,18 @@ class ResidentController extends Controller
             'status' => 200,
             'message' => 'Resident deleted successfully'
         ], 200);
+    }
+
+    private function isExist($request, $id = null)
+    {
+        $query = Resident::where('firstname', $request->firstname)
+            ->where('middlename', $request->middlename)
+            ->where('lastname', $request->lastname);
+
+        if ($id !== null) {
+            $query->where('id', '<>', $id);
+        }
+
+        return $query->exists();
     }
 }

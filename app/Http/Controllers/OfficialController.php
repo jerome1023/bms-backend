@@ -4,11 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Official;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\OfficialRequest;
 use App\Http\Resources\OfficialResource;
 use App\Models\Sitio;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
 class OfficialController extends Controller
@@ -16,74 +14,26 @@ class OfficialController extends Controller
     public function index()
     {
         $official = Official::all();
-        $data = OfficialResource::collection($official);
         return response()->json([
             'status' => 201,
             'message' => 'Data retrieved successfully',
-            'data' => $data
+            'data' => OfficialResource::collection($official)
         ], 200);
     }
 
-    public function view($name)
+    public function store(OfficialRequest $request)
     {
-        $officialName = Official::where('lastname', $name)->get();
-        if ($officialName->isEmpty()) {
-            return response()->json([
-                'status' => 404,
-                'message' => 'No data found'
-            ], 404);
-        }
-
-        $officialResource = OfficialResource::collection($officialName);
-        return response()->json([
-            'status' => 201,
-            'message' => 'Data retrieved successfully',
-            'data' => $officialResource
-        ], 200);
-    }
-
-    public function store(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'firstname' => 'required|string|max:255',
-            'middlename' => 'required|string|max:255',
-            'lastname' => 'required|string|max:255',
-            'gender' => 'required|string|max:255',
-            'position' => 'required|string|max:255',
-            'birthdate' => 'required|date',
-            'sitio_id' => 'required|string|max:255',
-            'start_term' => 'required|date',
-            'end_term' => 'required|date',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => 400,
-                'message' => 'Validation failed',
-                'errors' => $validator->errors()
-            ], 400);
-        }
-
-        $existingOfficial = Official::where([
-            'firstname' => $request->firstname,
-            'middlename' => $request->middlename,
-            'lastname' => $request->lastname,
-        ])->exists();
-
-        if ($existingOfficial) {
+        if ($this->isExist($request)) {
             return response()->json([
                 'status' => 409,
                 'message' => 'Official with the same name already exists'
             ], 409);
         }
 
-        $sitio = Sitio::where('id', $request->sitio_id)->first();
+        $sitio = $this->findDataOrFail(Sitio::class ,$request->sitio_id, 'Sitio Not Found');
 
-        if (!$sitio) {
-            return response()->json([
-                'status' => 404,
-                'message' => 'Sitio not found'
-            ], 404);
+        if ($sitio instanceof \Illuminate\Http\JsonResponse) {
+            return $sitio;
         }
 
         Official::create([
@@ -106,57 +56,40 @@ class OfficialController extends Controller
         ], 201);
     }
 
-    public function update(Request $request, $id)
+    public function show($id)
     {
-        $validator = Validator::make($request->all(), [
-            'firstname' => 'required|string|max:255',
-            'middlename' => 'required|string|max:255',
-            'lastname' => 'required|string|max:255',
-            'gender' => 'required|string|max:255',
-            'position' => 'required|string|max:255',
-            'birthdate' => 'required|date',
-            'sitio_id' => 'required|string|max:255',
-            'start_term' => 'required|date',
-            'end_term' => 'required|date',
-        ]);
+        $official = $this->findDataOrFail(Official::class ,$id);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => 400,
-                'message' => 'Validation failed',
-                'errors' => $validator->errors()
-            ], 400);
-        }
-        
-        $official = Official::where('id', $id)->first();
-        if (!$official) {
-            return response()->json([
-                'status' => 404,
-                'message' => 'Official not found'
-            ], 404);
-        }
-        
-        $exists = DB::table('official')
-            ->where('id', '<>', $id)
-            ->where('firstname', $request->firstname)
-            ->where('middlename', $request->middlename)
-            ->where('lastname', $request->lastname)
-            ->exists();
-
-        if ($exists) {
-            return response()->json([
-                'status' => 400,
-                'message' => 'Official name already exists.'
-            ], 400);
+        if ($official instanceof \Illuminate\Http\JsonResponse) {
+            return $official;
         }
 
-        $sitio = Sitio::where('id', $request->sitio_id)->first();
+        return response()->json([
+            'status' => 201,
+            'message' => 'Data retrieved successfully',
+            'data' => new OfficialResource($official)
+        ], 200);
+    }
 
-        if (!$sitio) {
+    public function update(OfficialRequest $request, $id)
+    {    
+        $official = $this->findDataOrFail(Official::class ,$id);
+
+        if ($official instanceof \Illuminate\Http\JsonResponse) {
+            return $official;
+        }
+
+        if ($this->isExist($request, $id)) {
             return response()->json([
-                'status' => 404,
-                'message' => 'Sitio not found'
-            ], 404);
+                'status' => 409,
+                'message' => 'Official with the same name already exists'
+            ], 409);
+        }
+
+        $sitio = $this->findDataOrFail(Sitio::class ,$request->sitio_id, 'Sitio Not Found');
+
+        if ($sitio instanceof \Illuminate\Http\JsonResponse) {
+            return $sitio;
         }
 
         $official->update([
@@ -181,12 +114,10 @@ class OfficialController extends Controller
 
     public function destroy($id)
     {
-        $official = Official::where('id', $id)->first();
-        if (!$official) {
-            return response()->json([
-                'status' => 404,
-                'message' => 'Official not found'
-            ], 404);
+        $official = $this->findDataOrFail(Official::class ,$id);
+        
+        if ($official instanceof \Illuminate\Http\JsonResponse) {
+            return $official;
         }
 
         $official->delete();
@@ -195,5 +126,18 @@ class OfficialController extends Controller
             'status' => 200,
             'message' => 'Official deleted successfully'
         ], 200);
+    }
+
+    private function isExist($request, $id = null)
+    {
+        $query = Official::where('firstname', $request->firstname)
+            ->where('middlename', $request->middlename)
+            ->where('lastname', $request->lastname);
+
+        if ($id !== null) {
+            $query->where('id', '<>', $id);
+        }
+
+        return $query->exists();
     }
 }

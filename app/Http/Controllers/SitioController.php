@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Sitio;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\SitioRequest;
 use App\Http\Resources\SitioResource;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
 class SitioController extends Controller
@@ -19,54 +19,15 @@ class SitioController extends Controller
             $sitios = Sitio::all();
         }
 
-        $sitiosResource = SitioResource::collection($sitios);
         return response()->json([
             'status' => 201,
             'message' => 'Data retrieved successfully',
-            'data' => $sitiosResource
+            'data' => SitioResource::collection($sitios)
         ], 200);
     }
 
-    public function view($name)
+    public function store(SitioRequest $request)
     {
-        $sitioName = Sitio::where('name', $name)->get();
-        if($sitioName->isEmpty()){
-            return response()->json([
-                'status' => 404,
-                'message' => 'No data found'
-            ], 404);
-        }
-
-        $sitiosResource = SitioResource::collection($sitioName);
-        return response()->json([
-            'status' => 201,
-            'message' => 'Data retrieved successfully',
-            'data' => $sitiosResource
-        ], 200);
-    }
-
-    public function store(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => 400,
-                'message' => 'Validation failed',
-                'errors' => $validator->errors()
-            ], 400);
-        }
-
-        $existingSitio = Sitio::where('name', $request->name)->exists();
-        if ($existingSitio) {
-            return response()->json([
-                'status' => 400,
-                'message' => 'The name has already been taken'
-            ], 400);
-        }
-
         Sitio::create([
             'id' => Str::uuid(),
             'name' => $request->name
@@ -78,26 +39,28 @@ class SitioController extends Controller
         ], 201);
     }
 
-    public function update(Request $request, $name)
+    public function show($id)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => 400,
-                'message' => 'Validation failed',
-                'errors' => $validator->errors()
-            ], 400);
+        $sitio = $this->findDataOrFail(Sitio::class ,$id);
+        
+        if ($sitio instanceof \Illuminate\Http\JsonResponse) {
+            return $sitio;
         }
 
-        $sitio = Sitio::where('name', $name)->first();
-        if (!$sitio) {
-            return response()->json([
-                'status' => 404,
-                'message' => 'Sitio not found'
-            ], 404);
+        return response()->json([
+            'status' => 200,
+            'message' => 'Data retrieved successfully',
+            'data' => new SitioResource($sitio)
+        ], 200);
+    }
+
+
+    public function update(SitioRequest $request, $id)
+    {
+        $sitio = $this->findDataOrFail(Sitio::class ,$id);
+
+        if ($sitio instanceof \Illuminate\Http\JsonResponse) {
+            return $sitio;
         }
 
         $sitio->name = $request->name;
@@ -110,15 +73,12 @@ class SitioController extends Controller
         ], 200);
     }
 
-    public function destroy($name)
+    public function destroy($id)
     {
-        $sitio = Sitio::where('name', $name)->first();
+        $sitio = $this->findDataOrFail(Sitio::class ,$id);
 
-        if (!$sitio) {
-            return response()->json([
-                'status' => 404,
-                'message' => 'Sitio not found'
-            ], 404);
+        if ($sitio instanceof \Illuminate\Http\JsonResponse) {
+            return $sitio;
         }
 
         $sitio->delete();

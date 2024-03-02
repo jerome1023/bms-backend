@@ -4,32 +4,34 @@ namespace App\Http\Controllers;
 
 use App\Models\Document;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Http\Requests\DocumentRequest;
+use App\Http\Resources\DocumentResource;
+use Illuminate\Support\Str;
 
 class DocumentController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $document = Document::all();
+        return response()->json([
+            'status' => 201,
+            'message' => 'Data retrieved successfully',
+            'data' => DocumentResource::collection($document)
+        ], 200);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function store(DocumentRequest $request)
     {
-        //
-    }
+        Document::create([
+            'id' => Str::uuid(),
+            'name' => $request->name,
+            'price' => $request->price
+        ]);
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
+        return response()->json([
+            'status' => 201,
+            'message' => 'Document created successfully'
+        ], 201);
     }
 
     /**
@@ -40,27 +42,39 @@ class DocumentController extends Controller
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Document $document)
+    public function update(DocumentRequest $request, $id)
     {
-        //
+        $document = $this->findDataOrFail(Document::class ,$id);
+
+        if ($document instanceof \Illuminate\Http\JsonResponse) {
+            return $document;
+        }
+
+        $document->update([
+            'name' => $request->name,
+            'price' => $request->price
+        ]);
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Document updated successfully',
+            'data' => $document
+        ], 200);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Document $document)
+    public function destroy($id)
     {
-        //
-    }
+        $document = $this->findDataOrFail(Document::class ,$id);
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Document $document)
-    {
-        //
+        if ($document instanceof \Illuminate\Http\JsonResponse) {
+            return $document;
+        }
+        
+        $document->delete();
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Document deleted successfully'
+        ], 200);
     }
 }

@@ -33,6 +33,6 @@ class Request extends Model
 
     public function sitio()
     {
-        return $this->belongsTo(Sitio::class);
+        return $this->belongsTo(Sitio::class, 'sitio_id');
     }
 }

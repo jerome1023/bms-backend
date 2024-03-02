@@ -11,15 +11,18 @@ use App\Models\User;
 
 class UserController extends Controller
 {
-    //
     public function view(string $id): JsonResponse
     {
-        $user = User::where(['id' => $id])->first();
+        $user = $this->findDataOrFail(User::class ,$id);
 
-        // return (new UserResource($user))->response()->setStatusCode(Response::HTTP_OK);
+        if ($user instanceof \Illuminate\Http\JsonResponse) {
+            return $user;
+        }
+
         return response()->json([
+            'status' => Response::HTTP_OK,
+            'message' => 'Data retrieved successfully',
             'data' => new UserResource($user),
-            'status' => Response::HTTP_OK
         ], Response::HTTP_OK);
     }
 }
