@@ -11,15 +11,33 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, ValidatesRequests;
 
-    protected function findDataOrFail($model, $id, $errorMessage = 'Record not found')
+    protected function findDataOrFail($model, $key, $errorMessage = 'Record not found')
     {
         try {
-            return $model::findOrFail($id);
+            return $model::findOrFail($key);
         } catch (ModelNotFoundException $exception) {
             return response()->json([
                 'status' => 404,
                 'message' => $errorMessage
             ], 404);
         }
+    }
+
+    protected function jsonResponse($status, $message, $data = null, $errors = null)
+    {
+        $responseData = [
+            'status' => $status,
+            'message' => $message,
+        ];
+
+        if ($data !== null) {
+            $responseData['data'] = $data;
+        }
+
+        if ($errors !== null) {
+            $responseData['errors'] = $errors;
+        }
+
+        return response()->json($responseData, $status);
     }
 }

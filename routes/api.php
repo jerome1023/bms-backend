@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\OfficialController;
+use App\Http\Controllers\RequestController;
 use App\Http\Controllers\ResidentController;
 use App\Http\Controllers\SitioController;
 use App\Http\Controllers\UserController;
@@ -52,7 +53,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
     Route::controller(ResidentController::class)->prefix('/resident')->group(function () {
         Route::get('/list', 'index');
-        Route::get('/view/{name}', 'show');
+        Route::get('/view/{id}', 'show');
         Route::post('/create', 'store');
         Route::put('/update/{id}', 'update');
         Route::delete('/delete/{id}', 'destroy');
@@ -61,6 +62,14 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::controller(DocumentController::class)->prefix('/document')->group(function () {
         Route::get('/list', 'index');
         Route::get('/view/{name}', 'view');
+        Route::post('/create', 'store');
+        Route::put('/update/{id}', 'update');
+        Route::delete('/delete/{id}', 'destroy');
+    });
+
+    Route::controller(RequestController::class)->prefix('/request')->group(function () {
+        Route::get('/list/{status}', 'index');
+        Route::get('/view/{id}', 'view');
         Route::post('/create', 'store');
         Route::put('/update/{id}', 'update');
         Route::delete('/delete/{id}', 'destroy');

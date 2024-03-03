@@ -14,11 +14,13 @@ return new class extends Migration
         Schema::create('requests', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignUuid('user_id')->constrained('users');
+            $table->string('fullname');
             $table->integer('age');
             $table->foreignUuid('document_id')->constrained('documents');
             $table->string('purpose');
             $table->foreignUuid('sitio_id')->constrained('sitios');
             $table->integer('income')->nullable();
+            $table->integer('price');
             $table->string('status');
             $table->boolean('archive_status');
             $table->timestamps();

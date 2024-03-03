@@ -9,14 +9,19 @@ class Request extends Model
 {
     use HasFactory;
 
+    protected $primaryKey = 'id';
+    public $incrementing = false;
+
     protected $fillable = [
         'id',
+        'fullname',
         'user_id',
         'age',
         'document_id',
         'purpose',
         'sitio_id',
         'income',
+        'price',
         'status',
         'archive_status',
     ];
