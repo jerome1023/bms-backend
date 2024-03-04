@@ -14,20 +14,13 @@ class ResidentController extends Controller
     public function index()
     {
         $resident = Resident::all();
-        return response()->json([
-            'status' => 201,
-            'message' => 'Data retrieved successfully',
-            'data' => ResidentResource::collection($resident)
-        ], 200);
+        return $this->jsonResponse(200, 'Data retrieved successfully', ResidentResource::collection($resident));
     }
 
     public function store(ResidentRequest $request)
     {
         if ($this->isExist($request)) {
-            return response()->json([
-                'status' => 409,
-                'message' => 'Resident with the same name already exists'
-            ]);
+            return $this->jsonResponse(409, 'Resident with the same name already exists');
         }
 
         $sitio = $this->findDataOrFail(Sitio::class, $request->sitio_id, 'Sitio Not Found');
@@ -55,10 +48,7 @@ class ResidentController extends Controller
             'archive_status' => false
         ]);
 
-        return response()->json([
-            'status' => 201,
-            'message' => 'Resident added successfully',
-        ], 201);
+        return $this->jsonResponse(201, 'Resident added successfully');
     }
 
     public function show($id)
@@ -69,11 +59,7 @@ class ResidentController extends Controller
             return $resident;
         }
 
-        return response()->json([
-            'status' => 201,
-            'message' => 'Data retrieved successfully',
-            'data' => new ResidentResource($resident)
-        ], 200);
+        return $this->jsonResponse(201, 'Data retrieved successfully', new ResidentResource($resident));
     }
 
     public function update(ResidentRequest $request, $id)
@@ -85,10 +71,7 @@ class ResidentController extends Controller
         }
 
         if ($this->isExist($request, $id)) {
-            return response()->json([
-                'status' => 409,
-                'message' => 'Resident with the same name already exists'
-            ], 409);
+            return $this->jsonResponse(409, 'Resident with the same name already exists');
         }
 
         $sitio = $this->findDataOrFail(Sitio::class, $request->sitio_id, 'Sitio Not Found');
@@ -115,11 +98,7 @@ class ResidentController extends Controller
             'archive_status' => $request->archive_status ?? false,
         ]);
 
-        return response()->json([
-            'status' => 200,
-            'message' => 'Resident updated successfully',
-            'data' => $resident
-        ], 200);
+        return $this->jsonResponse(200, 'Resident updated successfully', $resident);
     }
 
     public function destroy($id)
@@ -131,11 +110,7 @@ class ResidentController extends Controller
         }
 
         $resident->delete();
-
-        return response()->json([
-            'status' => 200,
-            'message' => 'Resident deleted successfully'
-        ], 200);
+        return $this->jsonResponse(200, 'Resident deleted successfully');
     }
 
     private function isExist($request, $id = null)

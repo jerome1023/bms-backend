@@ -14,23 +14,16 @@ class OfficialController extends Controller
     public function index()
     {
         $official = Official::all();
-        return response()->json([
-            'status' => 201,
-            'message' => 'Data retrieved successfully',
-            'data' => OfficialResource::collection($official)
-        ], 200);
+        return $this->jsonResponse(201, 'Data retrieved successfully', OfficialResource::collection($official));
     }
 
     public function store(OfficialRequest $request)
     {
         if ($this->isExist($request)) {
-            return response()->json([
-                'status' => 409,
-                'message' => 'Official with the same name already exists'
-            ], 409);
+            return $this->jsonResponse(409, 'Official with the same name already exists');
         }
 
-        $sitio = $this->findDataOrFail(Sitio::class ,$request->sitio_id, 'Sitio Not Found');
+        $sitio = $this->findDataOrFail(Sitio::class, $request->sitio_id, 'Sitio Not Found');
 
         if ($sitio instanceof \Illuminate\Http\JsonResponse) {
             return $sitio;
@@ -49,44 +42,32 @@ class OfficialController extends Controller
             'end_term' => $request->end_term,
             'archive_status' => false
         ]);
-
-        return response()->json([
-            'status' => 201,
-            'message' => 'Official added successfully',
-        ], 201);
+        return $this->jsonResponse(201, 'Official added successfully');
     }
 
     public function show($id)
     {
-        $official = $this->findDataOrFail(Official::class ,$id);
+        $official = $this->findDataOrFail(Official::class, $id);
 
         if ($official instanceof \Illuminate\Http\JsonResponse) {
             return $official;
         }
-
-        return response()->json([
-            'status' => 201,
-            'message' => 'Data retrieved successfully',
-            'data' => new OfficialResource($official)
-        ], 200);
+        return $this->jsonResponse(201, 'Data retrieved successfully', new OfficialResource($official));
     }
 
     public function update(OfficialRequest $request, $id)
-    {    
-        $official = $this->findDataOrFail(Official::class ,$id);
+    {
+        $official = $this->findDataOrFail(Official::class, $id);
 
         if ($official instanceof \Illuminate\Http\JsonResponse) {
             return $official;
         }
 
         if ($this->isExist($request, $id)) {
-            return response()->json([
-                'status' => 409,
-                'message' => 'Official with the same name already exists'
-            ], 409);
+            return $this->jsonResponse(409, 'Official with the same name already exists');
         }
 
-        $sitio = $this->findDataOrFail(Sitio::class ,$request->sitio_id, 'Sitio Not Found');
+        $sitio = $this->findDataOrFail(Sitio::class, $request->sitio_id, 'Sitio Not Found');
 
         if ($sitio instanceof \Illuminate\Http\JsonResponse) {
             return $sitio;
@@ -104,28 +85,19 @@ class OfficialController extends Controller
             'end_term' => $request->end_term,
             'archive_status' => $request->archive_status ?? false,
         ]);
-
-        return response()->json([
-            'status' => 200,
-            'message' => 'Official updated successfully',
-            'data' => $official
-        ], 200);
+        return $this->jsonResponse(200, 'Official updated successfully', $official);
     }
 
     public function destroy($id)
     {
-        $official = $this->findDataOrFail(Official::class ,$id);
-        
+        $official = $this->findDataOrFail(Official::class, $id);
+
         if ($official instanceof \Illuminate\Http\JsonResponse) {
             return $official;
         }
 
         $official->delete();
-
-        return response()->json([
-            'status' => 200,
-            'message' => 'Official deleted successfully'
-        ], 200);
+        return $this->jsonResponse(200, 'Official deleted successfully');
     }
 
     private function isExist($request, $id = null)

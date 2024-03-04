@@ -13,11 +13,7 @@ class DocumentController extends Controller
     public function index()
     {
         $document = Document::all();
-        return response()->json([
-            'status' => 201,
-            'message' => 'Data retrieved successfully',
-            'data' => DocumentResource::collection($document)
-        ], 200);
+        return $this->jsonResponse(200, 'Data retrieved successfully', DocumentResource::collection($document));
     }
 
     public function store(DocumentRequest $request)
@@ -27,11 +23,7 @@ class DocumentController extends Controller
             'name' => $request->name,
             'price' => $request->price
         ]);
-
-        return response()->json([
-            'status' => 201,
-            'message' => 'Document created successfully'
-        ], 201);
+        return $this->jsonResponse(201, 'Document created successfully');
     }
 
     /**
@@ -44,7 +36,7 @@ class DocumentController extends Controller
 
     public function update(DocumentRequest $request, $id)
     {
-        $document = $this->findDataOrFail(Document::class ,$id);
+        $document = $this->findDataOrFail(Document::class, $id);
 
         if ($document instanceof \Illuminate\Http\JsonResponse) {
             return $document;
@@ -54,27 +46,18 @@ class DocumentController extends Controller
             'name' => $request->name,
             'price' => $request->price
         ]);
-
-        return response()->json([
-            'status' => 200,
-            'message' => 'Document updated successfully',
-            'data' => $document
-        ], 200);
+        return $this->jsonResponse(200, 'Document updated successfully', $document);
     }
 
     public function destroy($id)
     {
-        $document = $this->findDataOrFail(Document::class ,$id);
+        $document = $this->findDataOrFail(Document::class, $id);
 
         if ($document instanceof \Illuminate\Http\JsonResponse) {
             return $document;
         }
-        
-        $document->delete();
 
-        return response()->json([
-            'status' => 200,
-            'message' => 'Document deleted successfully'
-        ], 200);
+        $document->delete();
+        return $this->jsonResponse(200, 'Document deleted successfully');
     }
 }
