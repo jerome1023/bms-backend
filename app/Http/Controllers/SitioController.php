@@ -20,7 +20,6 @@ class SitioController extends Controller
         }
 
         return $this->jsonResponse(200, 'Data retrieved successfully', SitioResource::collection($sitios));
-        
     }
 
     public function store(SitioRequest $request)
@@ -31,25 +30,23 @@ class SitioController extends Controller
         ]);
 
         return $this->jsonResponse(201, 'Sitio created successfully');
-
     }
 
     public function show($id)
     {
-        $sitio = $this->findDataOrFail(Sitio::class ,$id);
-        
+        $sitio = $this->findDataOrFail(Sitio::class, $id);
+
         if ($sitio instanceof \Illuminate\Http\JsonResponse) {
             return $sitio;
         }
 
         return $this->jsonResponse(200, 'Data retrieved successfully', new SitioResource($sitio));
-
     }
 
 
     public function update(SitioRequest $request, $id)
     {
-        $sitio = $this->findDataOrFail(Sitio::class ,$id);
+        $sitio = $this->findDataOrFail(Sitio::class, $id);
 
         if ($sitio instanceof \Illuminate\Http\JsonResponse) {
             return $sitio;
@@ -59,12 +56,11 @@ class SitioController extends Controller
         $sitio->save();
 
         return $this->jsonResponse(200, 'Sitio updated successfully', $sitio);
-
     }
 
     public function destroy($id)
     {
-        $sitio = $this->findDataOrFail(Sitio::class ,$id);
+        $sitio = $this->findDataOrFail(Sitio::class, $id);
 
         if ($sitio instanceof \Illuminate\Http\JsonResponse) {
             return $sitio;
@@ -73,6 +69,5 @@ class SitioController extends Controller
         $sitio->delete();
 
         return $this->jsonResponse(200, 'Sitio deleted successfully');
-
     }
 }

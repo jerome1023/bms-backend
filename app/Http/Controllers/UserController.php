@@ -13,13 +13,12 @@ class UserController extends Controller
 {
     public function view(string $id): JsonResponse
     {
-        $user = $this->findDataOrFail(User::class ,$id);
+        $user = $this->findDataOrFail(User::class, $id);
 
         if ($user instanceof \Illuminate\Http\JsonResponse) {
             return $user;
         }
 
         return $this->jsonResponse(Response::HTTP_OK, 'Data retrieved successfully', new UserResource($user));
-
     }
 }

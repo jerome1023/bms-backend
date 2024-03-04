@@ -6,7 +6,9 @@ use App\Http\Controllers\OfficialController;
 use App\Http\Controllers\RequestController;
 use App\Http\Controllers\ResidentController;
 use App\Http\Controllers\SitioController;
+use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -61,7 +63,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
     Route::controller(DocumentController::class)->prefix('/document')->group(function () {
         Route::get('/list', 'index');
-        Route::get('/view/{name}', 'view');
+        Route::get('/view/{name}', 'show');
         Route::post('/create', 'store');
         Route::put('/update/{id}', 'update');
         Route::delete('/delete/{id}', 'destroy');
@@ -69,7 +71,15 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
     Route::controller(RequestController::class)->prefix('/request')->group(function () {
         Route::get('/list/{status}', 'index');
-        Route::get('/view/{id}', 'view');
+        Route::get('/view/{id}', 'show');
+        Route::post('/create', 'store');
+        Route::put('/update/{id}', 'update');
+        Route::delete('/delete/{id}', 'destroy');
+    });
+
+    Route::controller(TransactionController::class)->prefix('/transaction')->group(function () {
+        Route::get('/list', 'index');
+        Route::get('/view/{id}', 'show');
         Route::post('/create', 'store');
         Route::put('/update/{id}', 'update');
         Route::delete('/delete/{id}', 'destroy');
