@@ -22,7 +22,21 @@ class BlotterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'complainant' => ['required', 'string', 'max:255'],
+            'complainant_age' => ['required', 'integer'],
+            'complainant_address' => ['required', 'string', 'max:255'],
+            'complainant_contact_number' => ['required', 'numeric', 'integer'],
+            'complainee' => ['required', 'string', 'max:255'],
+            'complainee_age' => ['required', 'integer'],
+            'complainee_address' => ['required', 'string', 'max:255'],
+            'complainee_contact_number' => ['required', 'numeric', 'integer'],
+            'date' => ['required', 'date'],
+            'complain' => ['required', 'string', 'max:255'],
+            'agreement' => ['required', 'string', 'max:255'],
+            'official_id' => ['required', 'string', 'max:255'],
+            'witness' => ['required', 'string', 'max:255'],
+            'status' => ['required', 'string', 'max:255'],
+            'archive_status' => ['nullable', 'boolean']
         ];
     }
 }

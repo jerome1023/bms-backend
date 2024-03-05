@@ -14,6 +14,23 @@ class BlotterResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return [
+            'id' => $this->id,
+            'complainant' => $this->complainant,
+            'complainant_age' => $this->complainant_age,
+            'complainant_address' => $this->complainant_address,
+            'complainant_contact_number' => $this->complainant_contact_number,
+            'complainee' => $this->complainee,
+            'complainee_age' => $this->complainee_age,
+            'complainee_address' => $this->complainee_address,
+            'complainee_contact_number' => $this->complainee_contact_number,
+            'date' => $this->date,
+            'complain' => $this->complain,
+            'agreement' => $this->agreement,
+            'official_id' => $this->official_id,
+            'witness' => $this->witness,
+            'status' => $this->status,
+            'archive_status' => $this->archive_status
+        ];
     }
 }

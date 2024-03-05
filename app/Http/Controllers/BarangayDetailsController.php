@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\BarangayDetails;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\BarangayDetailsRequest;
+use App\Http\Resources\BarangayDetailsResource;
 use Illuminate\Http\Request;
 
 class BarangayDetailsController extends Controller
@@ -13,54 +15,26 @@ class BarangayDetailsController extends Controller
      */
     public function index()
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(BarangayDetails $barangayDetails)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(BarangayDetails $barangayDetails)
-    {
-        //
+        $details = BarangayDetails::all();
+        return $this->jsonResponse(200, 'Data retrieved successfully', BarangayDetailsResource::collection($details));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, BarangayDetails $barangayDetails)
+    public function update(BarangayDetailsRequest $request, $id)
     {
-        //
-    }
+        $details = $this->findDataOrFail(BarangayDetails::class, $id);
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(BarangayDetails $barangayDetails)
-    {
-        //
+        if ($details instanceof \Illuminate\Http\JsonResponse) {
+            return $details;
+        }
+
+        $details->update([
+            'name' => $request->name,
+            'image' => $request->image,
+            'logo' => $request->logo
+        ]);
+        return $this->jsonResponse(200, 'Barangay Details updated successfully', $details);
     }
 }

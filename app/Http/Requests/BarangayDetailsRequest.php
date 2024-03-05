@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class BarangayDetailsRequest extends FormRequest
 {
@@ -11,7 +12,7 @@ class BarangayDetailsRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +23,9 @@ class BarangayDetailsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => ['required', 'string', 'max:255'],
+            'image' => ['required', 'string', 'max:255'],
+            'logo' => ['required', 'string', 'max:255']
         ];
     }
 }

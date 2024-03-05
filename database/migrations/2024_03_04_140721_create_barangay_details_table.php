@@ -12,8 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('barangay_details', function (Blueprint $table) {
+            $table->uuid('id')->primary();
             $table->string('name');
-            $table->string('image')->nullable();
+            $table->string('image');
+            $table->string('logo');
         });
     }
 

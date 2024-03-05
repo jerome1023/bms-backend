@@ -4,63 +4,73 @@ namespace App\Http\Controllers;
 
 use App\Models\Announcement;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Http\Requests\AnnouncementRequest;
+use App\Http\Resources\AnnouncementResource;
+use Illuminate\Support\Str;
 
 class AnnouncementController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $announcement = Announcement::all();
+        return $this->jsonResponse(200, 'Data retrieved successfully', AnnouncementResource::collection($announcement));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function store(AnnouncementRequest $request)
     {
-        //
-    }
+        $userId = auth()->id();
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
+        Announcement::create([
+            'id' => Str::uuid(),
+            'user_id' => $userId,
+            'what' => $request->what,
+            'where' => $request->where,
+            'who' => $request->who,
+            'when' => $request->when,
+            'details' => $request->details,
+            'image' => $request->image,
+            'archive_status' => false
+        ]);
+        return $this->jsonResponse(201, 'Announcement created successfully');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Announcement $announcement)
+    public function show(Announcement $Announcement)
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Announcement $announcement)
+    public function update(AnnouncementRequest $request, $id)
     {
-        //
+        $announcement = $this->findDataOrFail(Announcement::class, $id);
+
+        if ($announcement instanceof \Illuminate\Http\JsonResponse) {
+            return $announcement;
+        }
+
+        $announcement->update([
+            'what' => $request->what,
+            'where' => $request->where,
+            'who' => $request->who,
+            'when' => $request->when,
+            'details' => $request->details,
+            'image' => $request->image,
+            'archive_status' => $request->archive_status ?? false
+        ]);
+        return $this->jsonResponse(200, 'Announcement updated successfully', $announcement);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Announcement $announcement)
+    public function destroy($id)
     {
-        //
-    }
+        $announcement = $this->findDataOrFail(Announcement::class, $id);
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Announcement $announcement)
-    {
-        //
+        if ($announcement instanceof \Illuminate\Http\JsonResponse) {
+            return $announcement;
+        }
+
+        $announcement->delete();
+        return $this->jsonResponse(200, 'Announcement deleted successfully');
     }
 }

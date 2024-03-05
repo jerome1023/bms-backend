@@ -60,4 +60,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(Request::class);
     }
+
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
+    }
+
+    public function announcements()
+    {
+        return $this->hasMany(Announcement::class);
+    }
 }

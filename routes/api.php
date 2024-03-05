@@ -1,6 +1,9 @@
 <?php
 
+use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BarangayDetailsController;
+use App\Http\Controllers\BlotterController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\OfficialController;
 use App\Http\Controllers\RequestController;
@@ -8,8 +11,6 @@ use App\Http\Controllers\ResidentController;
 use App\Http\Controllers\SitioController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
-use App\Models\Transaction;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -33,6 +34,12 @@ Route::controller(AuthController::class)->group(function () {
 });
 
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
+
+    Route::controller(BarangayDetailsController::class)->prefix('/barangay_details')->group(function () {
+        Route::get('/list', 'index');
+        Route::put('/update/{id}', 'update');
+    });
+
     Route::controller(UserController::class)->prefix('/users')->group(function () {
         Route::get('/{id}', 'view');
     });
@@ -78,6 +85,22 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     });
 
     Route::controller(TransactionController::class)->prefix('/transaction')->group(function () {
+        Route::get('/list', 'index');
+        Route::get('/view/{id}', 'show');
+        Route::post('/create', 'store');
+        Route::put('/update/{id}', 'update');
+        Route::delete('/delete/{id}', 'destroy');
+    });
+
+    Route::controller(AnnouncementController::class)->prefix('/announcement')->group(function () {
+        Route::get('/list', 'index');
+        Route::get('/view/{id}', 'show');
+        Route::post('/create', 'store');
+        Route::put('/update/{id}', 'update');
+        Route::delete('/delete/{id}', 'destroy');
+    });
+
+    Route::controller(BlotterController::class)->prefix('/blotter')->group(function () {
         Route::get('/list', 'index');
         Route::get('/view/{id}', 'show');
         Route::post('/create', 'store');

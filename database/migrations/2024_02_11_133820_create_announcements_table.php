@@ -17,9 +17,9 @@ return new class extends Migration
             $table->string('what');
             $table->string('where');
             $table->string('who');
-            $table->string('when');
-            $table->string('details');
-            $table->binary('image')->nullable();
+            $table->dateTime('when');
+            $table->string('details')->nullable();
+            $table->string('image')->nullable();
             $table->boolean('archive_status');
             $table->timestamps();
         });
