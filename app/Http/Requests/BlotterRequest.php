@@ -11,7 +11,7 @@ class BlotterRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -25,16 +25,16 @@ class BlotterRequest extends FormRequest
             'complainant' => ['required', 'string', 'max:255'],
             'complainant_age' => ['required', 'integer'],
             'complainant_address' => ['required', 'string', 'max:255'],
-            'complainant_contact_number' => ['required', 'numeric', 'integer'],
+            'complainant_contact_number' => ['required', 'string', 'max:255'],
             'complainee' => ['required', 'string', 'max:255'],
             'complainee_age' => ['required', 'integer'],
             'complainee_address' => ['required', 'string', 'max:255'],
-            'complainee_contact_number' => ['required', 'numeric', 'integer'],
+            'complainee_contact_number' => ['required', 'string', 'max:255'],
             'date' => ['required', 'date'],
             'complain' => ['required', 'string', 'max:255'],
-            'agreement' => ['required', 'string', 'max:255'],
-            'official_id' => ['required', 'string', 'max:255'],
-            'witness' => ['required', 'string', 'max:255'],
+            'agreement' => ['nullable', 'string', 'max:255'],
+            'namagitan' => ['nullable',  'string', 'max:255'],
+            'witness' => ['nullable', 'string', 'max:255'],
             'status' => ['required', 'string', 'max:255'],
             'archive_status' => ['nullable', 'boolean']
         ];

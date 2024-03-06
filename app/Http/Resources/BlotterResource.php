@@ -27,7 +27,7 @@ class BlotterResource extends JsonResource
             'date' => $this->date,
             'complain' => $this->complain,
             'agreement' => $this->agreement,
-            'official_id' => $this->official_id,
+            'namagitan' => $this->namagitan,
             'witness' => $this->witness,
             'status' => $this->status,
             'archive_status' => $this->archive_status

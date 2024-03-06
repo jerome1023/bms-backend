@@ -10,6 +10,8 @@ class Blotter extends Model
 {
     use HasFactory, HasUuids;
 
+    public $timestamps = true;
+
     protected $fillable = [
         'id',
         'complainant',
@@ -23,9 +25,14 @@ class Blotter extends Model
         'date',
         'complain',
         'agreement',
-        'official_id',
+        'namagitan',
         'witness',
         'status',
         'archive_status'
     ];
+
+    public function official()
+    {
+        return $this->belongsTo(Official::class, 'official_id');
+    }
 }

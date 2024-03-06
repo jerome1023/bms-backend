@@ -24,7 +24,7 @@ return new class extends Migration
             $table->date('date');
             $table->string('complain');
             $table->string('agreement')->nullable();
-            $table->foreignUuid('namagitan')->constrained('officials')->nullable();
+            $table->string('namagitan')->nullable();
             $table->string('witness')->nullable();
             $table->string('status');
             $table->boolean('archive_status');
