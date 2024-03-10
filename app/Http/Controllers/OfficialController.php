@@ -23,11 +23,11 @@ class OfficialController extends Controller
             return $this->jsonResponse(false, 409, 'Official with the same name already exists');
         }
 
-        $sitio = $this->findDataOrFail(Sitio::class, $request->sitio_id, 'Sitio Not Found');
+        // $sitio = $this->findDataOrFail(Sitio::class, $request->sitio_id, 'Sitio Not Found');
 
-        if ($sitio instanceof \Illuminate\Http\JsonResponse) {
-            return $sitio;
-        }
+        // if ($sitio instanceof \Illuminate\Http\JsonResponse) {
+        //     return $sitio;
+        // }
 
         Official::create([
             'id' => Str::uuid(),
@@ -37,7 +37,7 @@ class OfficialController extends Controller
             'gender' => $request->gender,
             'position' => $request->position,
             'birthdate' => $request->birthdate,
-            'sitio_id' => $sitio->id,
+            // 'sitio_id' => $sitio->id,
             'start_term' => $request->start_term,
             'end_term' => $request->end_term,
             'archive_status' => false
@@ -67,11 +67,11 @@ class OfficialController extends Controller
             return $this->jsonResponse(false, 409, 'Official with the same name already exists');
         }
 
-        $sitio = $this->findDataOrFail(Sitio::class, $request->sitio_id, 'Sitio Not Found');
+        // $sitio = $this->findDataOrFail(Sitio::class, $request->sitio_id, 'Sitio Not Found');
 
-        if ($sitio instanceof \Illuminate\Http\JsonResponse) {
-            return $sitio;
-        }
+        // if ($sitio instanceof \Illuminate\Http\JsonResponse) {
+        //     return $sitio;
+        // }
 
         $official->update([
             'firstname' => $request->firstname,
@@ -80,7 +80,7 @@ class OfficialController extends Controller
             'gender' => $request->gender,
             'position' => $request->position,
             'birthdate' => $request->birthdate,
-            'sitio_id' => $sitio->id,
+            // 'sitio_id' => $sitio->id,
             'start_term' => $request->start_term,
             'end_term' => $request->end_term,
             'archive_status' => $request->archive_status ?? false,

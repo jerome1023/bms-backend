@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('gender');
             $table->string('position');
             $table->date('birthdate');
-            $table->foreignUuid('sitio_id')->constrained('sitios');
+            // $table->foreignUuid('sitio_id')->constrained('sitios');
             $table->date('start_term');
             $table->date('end_term');
             $table->boolean('archive_status');

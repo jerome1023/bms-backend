@@ -21,7 +21,7 @@ class Official extends Model
         'gender',
         'position',
         'birthdate',
-        'sitio_id',
+        // 'sitio_id',
         'start_term',
         'end_term',
         'archive_status'
