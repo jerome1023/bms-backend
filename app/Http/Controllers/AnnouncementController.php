@@ -13,7 +13,7 @@ class AnnouncementController extends Controller
     public function index()
     {
         $announcement = Announcement::all();
-        return $this->jsonResponse(200, 'Data retrieved successfully', AnnouncementResource::collection($announcement));
+        return $this->jsonResponse(true, 200, 'Data retrieved successfully', AnnouncementResource::collection($announcement));
     }
 
     public function store(AnnouncementRequest $request)
@@ -31,7 +31,7 @@ class AnnouncementController extends Controller
             'image' => $request->image,
             'archive_status' => false
         ]);
-        return $this->jsonResponse(201, 'Announcement created successfully');
+        return $this->jsonResponse(true, 201, 'Announcement created successfully');
     }
 
     /**
@@ -59,7 +59,7 @@ class AnnouncementController extends Controller
             'image' => $request->image,
             'archive_status' => $request->archive_status ?? false
         ]);
-        return $this->jsonResponse(200, 'Announcement updated successfully', $announcement);
+        return $this->jsonResponse(true, 200, 'Announcement updated successfully', $announcement);
     }
 
     public function destroy($id)
@@ -71,6 +71,6 @@ class AnnouncementController extends Controller
         }
 
         $announcement->delete();
-        return $this->jsonResponse(200, 'Announcement deleted successfully');
+        return $this->jsonResponse(true, 200, 'Announcement deleted successfully');
     }
 }

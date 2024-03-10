@@ -19,6 +19,6 @@ class UserController extends Controller
             return $user;
         }
 
-        return $this->jsonResponse(Response::HTTP_OK, 'Data retrieved successfully', new UserResource($user));
+        return $this->jsonResponse(true, Response::HTTP_OK, 'Data retrieved successfully', new UserResource($user));
     }
 }

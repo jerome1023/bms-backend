@@ -19,7 +19,7 @@ class SitioController extends Controller
             $sitios = Sitio::all();
         }
 
-        return $this->jsonResponse(200, 'Data retrieved successfully', SitioResource::collection($sitios));
+        return $this->jsonResponse(true, 200, 'Data retrieved successfully', SitioResource::collection($sitios));
     }
 
     public function store(SitioRequest $request)
@@ -29,7 +29,7 @@ class SitioController extends Controller
             'name' => $request->name
         ]);
 
-        return $this->jsonResponse(201, 'Sitio created successfully');
+        return $this->jsonResponse(true, 201, 'Sitio created successfully');
     }
 
     public function show($id)
@@ -40,7 +40,7 @@ class SitioController extends Controller
             return $sitio;
         }
 
-        return $this->jsonResponse(200, 'Data retrieved successfully', new SitioResource($sitio));
+        return $this->jsonResponse(true, 200, 'Data retrieved successfully', new SitioResource($sitio));
     }
 
 
@@ -55,7 +55,7 @@ class SitioController extends Controller
         $sitio->name = $request->name;
         $sitio->save();
 
-        return $this->jsonResponse(200, 'Sitio updated successfully', $sitio);
+        return $this->jsonResponse(true, 200, 'Sitio updated successfully', $sitio);
     }
 
     public function destroy($id)
@@ -68,6 +68,6 @@ class SitioController extends Controller
 
         $sitio->delete();
 
-        return $this->jsonResponse(200, 'Sitio deleted successfully');
+        return $this->jsonResponse(true, 200, 'Sitio deleted successfully');
     }
 }

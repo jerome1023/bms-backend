@@ -16,7 +16,7 @@ class BarangayDetailsController extends Controller
     public function index()
     {
         $details = BarangayDetails::all();
-        return $this->jsonResponse(200, 'Data retrieved successfully', BarangayDetailsResource::collection($details));
+        return $this->jsonResponse(true, 200, 'Data retrieved successfully', BarangayDetailsResource::collection($details));
     }
 
     /**
@@ -35,6 +35,6 @@ class BarangayDetailsController extends Controller
             'image' => $request->image,
             'logo' => $request->logo
         ]);
-        return $this->jsonResponse(200, 'Barangay Details updated successfully', $details);
+        return $this->jsonResponse(true, 200, 'Barangay Details updated successfully', $details);
     }
 }

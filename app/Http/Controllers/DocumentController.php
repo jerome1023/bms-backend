@@ -13,7 +13,7 @@ class DocumentController extends Controller
     public function index()
     {
         $document = Document::all();
-        return $this->jsonResponse(200, 'Data retrieved successfully', DocumentResource::collection($document));
+        return $this->jsonResponse(true, 200, 'Data retrieved successfully', DocumentResource::collection($document));
     }
 
     public function store(DocumentRequest $request)
@@ -23,7 +23,7 @@ class DocumentController extends Controller
             'name' => $request->name,
             'price' => $request->price
         ]);
-        return $this->jsonResponse(201, 'Document created successfully');
+        return $this->jsonResponse(true, 201, 'Document created successfully');
     }
 
     /**
@@ -46,7 +46,7 @@ class DocumentController extends Controller
             'name' => $request->name,
             'price' => $request->price
         ]);
-        return $this->jsonResponse(200, 'Document updated successfully', $document);
+        return $this->jsonResponse(true, 200, 'Document updated successfully', $document);
     }
 
     public function destroy($id)
@@ -58,6 +58,6 @@ class DocumentController extends Controller
         }
 
         $document->delete();
-        return $this->jsonResponse(200, 'Document deleted successfully');
+        return $this->jsonResponse(true, 200, 'Document deleted successfully');
     }
 }

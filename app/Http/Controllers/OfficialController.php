@@ -14,13 +14,13 @@ class OfficialController extends Controller
     public function index()
     {
         $official = Official::all();
-        return $this->jsonResponse(201, 'Data retrieved successfully', OfficialResource::collection($official));
+        return $this->jsonResponse(true, 201, 'Data retrieved successfully', OfficialResource::collection($official));
     }
 
     public function store(OfficialRequest $request)
     {
         if ($this->isExist($request)) {
-            return $this->jsonResponse(409, 'Official with the same name already exists');
+            return $this->jsonResponse(false, 409, 'Official with the same name already exists');
         }
 
         $sitio = $this->findDataOrFail(Sitio::class, $request->sitio_id, 'Sitio Not Found');
@@ -42,7 +42,7 @@ class OfficialController extends Controller
             'end_term' => $request->end_term,
             'archive_status' => false
         ]);
-        return $this->jsonResponse(201, 'Official added successfully');
+        return $this->jsonResponse(true, 201, 'Official added successfully');
     }
 
     public function show($id)
@@ -52,7 +52,7 @@ class OfficialController extends Controller
         if ($official instanceof \Illuminate\Http\JsonResponse) {
             return $official;
         }
-        return $this->jsonResponse(201, 'Data retrieved successfully', new OfficialResource($official));
+        return $this->jsonResponse(true, 201, 'Data retrieved successfully', new OfficialResource($official));
     }
 
     public function update(OfficialRequest $request, $id)
@@ -64,7 +64,7 @@ class OfficialController extends Controller
         }
 
         if ($this->isExist($request, $id)) {
-            return $this->jsonResponse(409, 'Official with the same name already exists');
+            return $this->jsonResponse(false, 409, 'Official with the same name already exists');
         }
 
         $sitio = $this->findDataOrFail(Sitio::class, $request->sitio_id, 'Sitio Not Found');
@@ -85,7 +85,7 @@ class OfficialController extends Controller
             'end_term' => $request->end_term,
             'archive_status' => $request->archive_status ?? false,
         ]);
-        return $this->jsonResponse(200, 'Official updated successfully', $official);
+        return $this->jsonResponse(true, 200, 'Official updated successfully', $official);
     }
 
     public function destroy($id)
@@ -97,7 +97,7 @@ class OfficialController extends Controller
         }
 
         $official->delete();
-        return $this->jsonResponse(200, 'Official deleted successfully');
+        return $this->jsonResponse(true, 200, 'Official deleted successfully');
     }
 
     private function isExist($request, $id = null)

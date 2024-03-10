@@ -23,11 +23,11 @@ class RequestController extends Controller
         $allowedStatus = ['pending', 'approved', 'disapproved', 'completed'];
 
         if (!in_array($status, $allowedStatus)) {
-            return $this->jsonResponse(400, 'Invalid status');
+            return $this->jsonResponse(false, 400, 'Invalid status');
         }
 
         $requests = Request::where('status', $status)->get();
-        return $this->jsonResponse(200, 'Data retrieved successfully', RequestResource::collection($requests));
+        return $this->jsonResponse(true, 200, 'Data retrieved successfully', RequestResource::collection($requests));
     }
 
 
@@ -44,7 +44,7 @@ class RequestController extends Controller
         }
 
         if ($role->name !== 'User') {
-            return $this->jsonResponse(403, 'Unauthorized to request');
+            return $this->jsonResponse(false, 403, 'Unauthorized to request');
         }
 
         $document = $this->findDataOrFail(Document::class, $request->document_id, 'Document Not Found');
@@ -66,7 +66,7 @@ class RequestController extends Controller
         }
 
         if ($this->isExist($request, $user, $document)) {
-            return $this->jsonResponse(400, 'Your request for the same document and name has not been completed yet');
+            return $this->jsonResponse(false, 400, 'Your request for the same document and name has not been completed yet');
         }
 
         Request::create([
@@ -82,7 +82,7 @@ class RequestController extends Controller
             'status' => $request->status ?? 'pending',
             'archive_status' => false
         ]);
-        return $this->jsonResponse(201, 'Request document successfully');
+        return $this->jsonResponse(true, 201, 'Request document successfully');
     }
 
     /**
@@ -96,7 +96,7 @@ class RequestController extends Controller
             return $request;
         }
 
-        return $this->jsonResponse(200, 'Data retrieved successfully', new RequestResource($request));
+        return $this->jsonResponse(true, 200, 'Data retrieved successfully', new RequestResource($request));
     }
 
     /**
@@ -113,7 +113,7 @@ class RequestController extends Controller
         }
 
         if ($role->name !== 'User') {
-            return $this->jsonResponse(403, 'Unauthorized to request');
+            return $this->jsonResponse(false, 403, 'Unauthorized to request');
         }
 
         $requestDocument = $this->findDataOrFail(Request::class, $id);
@@ -139,7 +139,7 @@ class RequestController extends Controller
         }
 
         if ($this->isExist($request, $user, $document, $id)) {
-            return $this->jsonResponse(400, 'Your request for the same document and name has not been completed yet');
+            return $this->jsonResponse(false, 400, 'Your request for the same document and name has not been completed yet');
         }
 
         $requestDocument->update([
@@ -154,7 +154,7 @@ class RequestController extends Controller
             'archive_status' => $request->archive_status ?? false
         ]);
 
-        return $this->jsonResponse(201, 'Requested Document updated successfully');
+        return $this->jsonResponse(true, 201, 'Requested Document updated successfully');
     }
 
     /**
@@ -170,7 +170,7 @@ class RequestController extends Controller
 
         $request->delete();
 
-        return $this->jsonResponse(200, 'Requested Document deleted successfully');
+        return $this->jsonResponse(true, 200, 'Requested Document deleted successfully');
     }
 
     private function validateRequestDocument($request, $document)
@@ -178,13 +178,13 @@ class RequestController extends Controller
         $purpose = ['work', 'school_requirement', 'business', 'others'];
 
         if (!in_array($request->purpose, $purpose)) {
-            return $this->jsonResponse(400, 'Invalid purpose');
+            return $this->jsonResponse(false, 400, 'Invalid purpose');
         }
 
         if ($request->purpose == 'school_requirement') {
             $acceptedDocuments = ['Barangay Clearance', 'Barangay Residency', 'Barangay Certificate'];
             if (!in_array($document->name, $acceptedDocuments)) {
-                return $this->jsonResponse(400, 'The document is not accepted for school requirements');
+                return $this->jsonResponse(false, 400, 'The document is not accepted for school requirements');
             }
         }
 
@@ -194,7 +194,7 @@ class RequestController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return $this->jsonResponse(400, 'Validation error', null, $validator->errors());
+                return $this->jsonResponse(false, 400, 'Validation error', null, $validator->errors());
             }
         }
 

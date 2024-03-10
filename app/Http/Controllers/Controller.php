@@ -23,10 +23,11 @@ class Controller extends BaseController
         }
     }
 
-    protected function jsonResponse($status, $message, $data = null, $errors = null)
+    protected function jsonResponse($status, $status_code, $message, $data = null, $errors = null)
     {
         $responseData = [
             'status' => $status,
+            'status_code' => $status_code,
             'message' => $message,
         ];
 
@@ -38,6 +39,6 @@ class Controller extends BaseController
             $responseData['errors'] = $errors;
         }
 
-        return response()->json($responseData, $status);
+        return response()->json($responseData);
     }
 }

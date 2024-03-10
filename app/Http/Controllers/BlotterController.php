@@ -15,7 +15,7 @@ class BlotterController extends Controller
     public function index()
     {
         $blotters = Blotter::all();
-        return $this->jsonResponse(200, 'Data retrieved successfully', BlotterResource::collection($blotters));
+        return $this->jsonResponse(true, 200, 'Data retrieved successfully', BlotterResource::collection($blotters));
     }
 
     public function store(BlotterRequest $request)
@@ -39,7 +39,7 @@ class BlotterController extends Controller
             'archive_status' => $request->archive_status ?? false
         ]);
 
-        return $this->jsonResponse(201, 'Blotter created successfully');
+        return $this->jsonResponse(true, 201, 'Blotter created successfully');
     }
 
     public function show($id)
@@ -50,7 +50,7 @@ class BlotterController extends Controller
             return $blotter;
         }
 
-        return $this->jsonResponse(200, 'Data retrieved successfully', new BlotterResource($blotter));
+        return $this->jsonResponse(true, 200, 'Data retrieved successfully', new BlotterResource($blotter));
     }
 
 
@@ -70,7 +70,7 @@ class BlotterController extends Controller
             ]);
     
             if ($validator->fails()) {
-                return $this->jsonResponse(400, 'Validation error', null, $validator->errors());
+                return $this->jsonResponse(false, 400, 'Validation error', null, $validator->errors());
             }
 
             $blotter->update([
@@ -99,7 +99,7 @@ class BlotterController extends Controller
             ]);
         }
 
-        return $this->jsonResponse(200, 'Blotter updated successfully', $blotter);
+        return $this->jsonResponse(true, 200, 'Blotter updated successfully', $blotter);
     }
 
     public function destroy($id)
@@ -112,6 +112,6 @@ class BlotterController extends Controller
 
         $blotter->delete();
 
-        return $this->jsonResponse(200, 'Blotter deleted successfully');
+        return $this->jsonResponse(true, 200, 'Blotter deleted successfully');
     }
 }

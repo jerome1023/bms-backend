@@ -20,7 +20,7 @@ class TransactionController extends Controller
     public function index()
     {
         $transaction = Transaction::all();
-        return $this->jsonResponse(200, 'Data retrieved successfully', TransactionResource::collection($transaction));
+        return $this->jsonResponse(true, 200, 'Data retrieved successfully', TransactionResource::collection($transaction));
     }
 
     /**
@@ -49,7 +49,7 @@ class TransactionController extends Controller
             'archive_status' => $request->archive_status ?? false
         ]);
 
-        return $this->jsonResponse(201, 'Transaction created successfully');
+        return $this->jsonResponse(true, 201, 'Transaction created successfully');
     }
 
     /**
@@ -62,7 +62,7 @@ class TransactionController extends Controller
             return $transaction;
         }
 
-        return $this->jsonResponse(201, 'Data retrieved successfully', new TransactionResource($transaction));
+        return $this->jsonResponse(true, 201, 'Data retrieved successfully', new TransactionResource($transaction));
     }
 
     /**
@@ -93,7 +93,7 @@ class TransactionController extends Controller
             'archive_status' => $request->archive_status ?? false
         ]);
 
-        return $this->jsonResponse(201, 'Transaction updated successfully', $transaction);
+        return $this->jsonResponse(true, 201, 'Transaction updated successfully', $transaction);
     }
 
     /**
@@ -107,7 +107,7 @@ class TransactionController extends Controller
         }
 
         $transaction->delete();
-        return $this->jsonResponse(200, 'Resident deleted successfully');
+        return $this->jsonResponse(true, 200, 'Resident deleted successfully');
     }
 
     private function validateRequestDocument($request, $document)
@@ -115,13 +115,13 @@ class TransactionController extends Controller
         $purpose = ['work', 'school_requirement', 'business', 'others'];
 
         if (!in_array($request->purpose, $purpose)) {
-            return $this->jsonResponse(400, 'Invalid purpose');
+            return $this->jsonResponse(false, 400, 'Invalid purpose');
         }
 
         if ($request->purpose == 'school_requirement') {
             $acceptedDocuments = ['Barangay Clearance', 'Barangay Residency', 'Barangay Certificate'];
             if (!in_array($document->name, $acceptedDocuments)) {
-                return $this->jsonResponse(400, 'The document is not accepted for school requirements');
+                return $this->jsonResponse(false, 400, 'The document is not accepted for school requirements');
             }
 
         }
@@ -132,7 +132,7 @@ class TransactionController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return $this->jsonResponse(400, 'Validation error', null, $validator->errors());
+                return $this->jsonResponse(false, 400, 'Validation error', null, $validator->errors());
             }
         }
 

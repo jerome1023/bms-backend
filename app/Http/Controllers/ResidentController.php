@@ -14,13 +14,13 @@ class ResidentController extends Controller
     public function index()
     {
         $resident = Resident::all();
-        return $this->jsonResponse(200, 'Data retrieved successfully', ResidentResource::collection($resident));
+        return $this->jsonResponse(true, 200, 'Data retrieved successfully', ResidentResource::collection($resident));
     }
 
     public function store(ResidentRequest $request)
     {
         if ($this->isExist($request)) {
-            return $this->jsonResponse(409, 'Resident with the same name already exists');
+            return $this->jsonResponse(false, 409, 'Resident with the same name already exists');
         }
 
         $sitio = $this->findDataOrFail(Sitio::class, $request->sitio_id, 'Sitio Not Found');
@@ -48,7 +48,7 @@ class ResidentController extends Controller
             'archive_status' => false
         ]);
 
-        return $this->jsonResponse(201, 'Resident added successfully');
+        return $this->jsonResponse(true, 201, 'Resident added successfully');
     }
 
     public function show($id)
@@ -59,7 +59,7 @@ class ResidentController extends Controller
             return $resident;
         }
 
-        return $this->jsonResponse(201, 'Data retrieved successfully', new ResidentResource($resident));
+        return $this->jsonResponse(true, 201, 'Data retrieved successfully', new ResidentResource($resident));
     }
 
     public function update(ResidentRequest $request, $id)
@@ -71,7 +71,7 @@ class ResidentController extends Controller
         }
 
         if ($this->isExist($request, $id)) {
-            return $this->jsonResponse(409, 'Resident with the same name already exists');
+            return $this->jsonResponse(false, 409, 'Resident with the same name already exists');
         }
 
         $sitio = $this->findDataOrFail(Sitio::class, $request->sitio_id, 'Sitio Not Found');
@@ -98,7 +98,7 @@ class ResidentController extends Controller
             'archive_status' => $request->archive_status ?? false,
         ]);
 
-        return $this->jsonResponse(200, 'Resident updated successfully', $resident);
+        return $this->jsonResponse(true, 200, 'Resident updated successfully', $resident);
     }
 
     public function destroy($id)
@@ -110,7 +110,7 @@ class ResidentController extends Controller
         }
 
         $resident->delete();
-        return $this->jsonResponse(200, 'Resident deleted successfully');
+        return $this->jsonResponse(true, 200, 'Resident deleted successfully');
     }
 
     private function isExist($request, $id = null)
