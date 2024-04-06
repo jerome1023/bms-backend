@@ -33,6 +33,6 @@ class Blotter extends Model
 
     public function official()
     {
-        return $this->belongsTo(Official::class, 'official_id');
+        return $this->belongsTo(Official::class, 'namagitan');
     }
 }

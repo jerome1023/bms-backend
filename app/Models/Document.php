@@ -18,4 +18,14 @@ class Document extends Model
         'name',
         'price'
     ];
+
+    public function requests()
+    {
+        return $this->hasMany(Request::class, 'document_id');
+    }
+
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class, 'document_id');
+    }
 }

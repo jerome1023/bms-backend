@@ -58,16 +58,16 @@ class User extends Authenticatable
 
     public function requests()
     {
-        return $this->hasMany(Request::class);
+        return $this->hasMany(Request::class, 'user_id');
     }
 
     public function transactions()
     {
-        return $this->hasMany(Transaction::class);
+        return $this->hasMany(Transaction::class, 'user_id');
     }
 
     public function announcements()
     {
-        return $this->hasMany(Announcement::class);
+        return $this->hasMany(Announcement::class, 'user_id');
     }
 }

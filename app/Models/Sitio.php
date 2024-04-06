@@ -21,16 +21,16 @@ class Sitio extends Model
 
     public function requests()
     {
-        return $this->hasMany(Request::class);
+        return $this->hasMany(Request::class, 'sitio_id');
     }
 
-    public function officials()
-    {
-        return $this->hasMany(Official::class);
-    }
+    // public function officials()
+    // {
+    //     return $this->hasMany(Official::class);
+    // }
 
     public function residents()
     {
-        return $this->hasMany(Resident::class);
+        return $this->hasMany(Resident::class, 'sitio_id');
     }
 }

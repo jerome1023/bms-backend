@@ -9,6 +9,7 @@ use App\Http\Resources\RequestResource;
 use App\Models\Document;
 use App\Models\Role;
 use App\Models\Sitio;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -34,16 +35,17 @@ class RequestController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(RequestsRequest $request)
+    public function store(RequestsRequest $request, Authenticatable $user)
     {
-        $user = Auth::user();
+        // $user = Auth::user();
 
-        $role = $this->findDataOrFail(Role::class, $user->role_id, 'Role Not Found');
-        if ($role instanceof \Illuminate\Http\JsonResponse) {
-            return $role;
-        }
+        // dd($user->role->name);
+        // $role = $this->findDataOrFail(Role::class, $user->role_id, 'Role Not Found');
+        // if ($role instanceof \Illuminate\Http\JsonResponse) {
+        //     return $role;
+        // }
 
-        if ($role->name !== 'User') {
+        if ($user->role->name !== 'User') {
             return $this->jsonResponse(false, 403, 'Unauthorized to request');
         }
 
@@ -51,7 +53,6 @@ class RequestController extends Controller
         if ($document instanceof \Illuminate\Http\JsonResponse) {
             return $document;
         }
-
 
         $validationError = $this->validateRequestDocument($request, $document);
         if ($validationError) {
@@ -107,12 +108,12 @@ class RequestController extends Controller
 
         $user = Auth::user();
 
-        $role = $this->findDataOrFail(Role::class, $user->role_id, 'Role Not Found');
-        if ($role instanceof \Illuminate\Http\JsonResponse) {
-            return $role;
-        }
+        // $role = $this->findDataOrFail(Role::class, $user->role_id, 'Role Not Found');
+        // if ($role instanceof \Illuminate\Http\JsonResponse) {
+        //     return $role;
+        // }
 
-        if ($role->name !== 'User') {
+        if ($user->role->name !== 'User') {
             return $this->jsonResponse(false, 403, 'Unauthorized to request');
         }
 
