@@ -52,7 +52,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::delete('/delete/{id}', 'destroy');
     });
 
-    Route::controller(OfficialController::class)->prefix('/official')->group(function () {
+    Route::controller(OfficialController::class)->prefix('/barangay-official')->group(function () {
         Route::get('/list', 'index');
         Route::get('/view/{id}', 'show');
         Route::post('/create', 'store');
