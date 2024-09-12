@@ -37,8 +37,14 @@ class AnnouncementController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Announcement $Announcement)
+    public function show($id)
     {
+        $announcement = $this->findDataOrFail(Announcement::class, $id);
+        if ($announcement instanceof \Illuminate\Http\JsonResponse) {
+            return $announcement;
+        }
+        return $this->jsonResponse(true, 201, 'Data retrieved successfully', new AnnouncementResource($announcement));
+        dd($announcement);
         //
     }
 
