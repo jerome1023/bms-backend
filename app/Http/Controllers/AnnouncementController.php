@@ -6,6 +6,7 @@ use App\Models\Announcement;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AnnouncementRequest;
 use App\Http\Resources\AnnouncementResource;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class AnnouncementController extends Controller
@@ -20,6 +21,25 @@ class AnnouncementController extends Controller
     {
         $userId = auth()->id();
 
+        $base64Image = $request->image;
+        $imageName = null;
+
+        if ($base64Image) {
+            if (preg_match('/^data:image\/(\w+);base64,/', $base64Image, $type)) {
+                $imageType = strtolower($type[1]);
+
+                if (!in_array($imageType, ['jpg', 'jpeg', 'png'])) {
+                    return $this->jsonResponse(false, 400, 'Validation error', null, ['image' => 'Invalid image format']);
+                }
+
+                $image = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $base64Image));
+                $imageName = time() . '.' . $imageType;
+                Storage::disk('public')->put('images/' . $imageName, $image);
+            } else {
+                return $this->jsonResponse(false, 400, 'Validation error', null, ['image' => 'Invalid Base64 string']);
+            }
+        }
+
         Announcement::create([
             'id' => Str::uuid(),
             'user_id' => $userId,
@@ -28,7 +48,7 @@ class AnnouncementController extends Controller
             'who' => $request->who,
             'when' => $request->when,
             'details' => $request->details,
-            'image' => $request->image,
+            'image' => $imageName ? '/storage/images/' . $imageName : null,
             'archive_status' => false
         ]);
         return $this->jsonResponse(true, 201, 'Announcement created successfully');
@@ -44,7 +64,6 @@ class AnnouncementController extends Controller
             return $announcement;
         }
         return $this->jsonResponse(true, 201, 'Data retrieved successfully', new AnnouncementResource($announcement));
-        dd($announcement);
         //
     }
 
@@ -56,13 +75,49 @@ class AnnouncementController extends Controller
             return $announcement;
         }
 
+        $base64Image = $request->image;
+        $imageName = null;
+
+        if ($base64Image === null) {
+            // Delete the old image from storage if it exists
+            if ($announcement->image) {
+                $oldImageName = basename($announcement->image);
+                if (Storage::disk('public')->exists('images/' . $oldImageName)) {
+                    Storage::disk('public')->delete('images/' . $oldImageName);
+                }
+            }
+        } elseif ($base64Image && $base64Image != $announcement->image) {
+            // Handle image upload/change
+            if (preg_match('/^data:image\/(\w+);base64,/', $base64Image, $type)) {
+                $imageType = strtolower($type[1]);
+
+                if (!in_array($imageType, ['jpg', 'jpeg', 'png'])) {
+                    return $this->jsonResponse(false, 400, 'Validation error', null, ['image' => 'Invalid image format']);
+                }
+
+                $image = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $base64Image));
+                $imageName = time() . '.' . $imageType;
+                Storage::disk('public')->put('images/' . $imageName, $image);
+            } else {
+                return $this->jsonResponse(false, 400, 'Validation error', null, ['image' => 'Invalid Base64 string']);
+            }
+
+            // Delete the old image from storage if a new one is uploaded
+            if ($announcement->image) {
+                $oldImageName = basename($announcement->image);
+                if (Storage::disk('public')->exists('images/' . $oldImageName)) {
+                    Storage::disk('public')->delete('images/' . $oldImageName);
+                }
+            }
+        }
+
         $announcement->update([
             'what' => $request->what,
             'where' => $request->where,
             'who' => $request->who,
             'when' => $request->when,
             'details' => $request->details,
-            'image' => $request->image,
+            'image' => $imageName ? '/storage/images/' . $imageName : ($base64Image === null ? null : $announcement->image),
             'archive_status' => $request->archive_status ?? false
         ]);
         return $this->jsonResponse(true, 200, 'Announcement updated successfully', $announcement);

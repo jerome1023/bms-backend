@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Foundation\Http\FormRequest;
+use App\Rules\Base64Image;
 
 class AnnouncementRequest extends FormRequest
 {
@@ -36,9 +37,9 @@ class AnnouncementRequest extends FormRequest
             'what' => ['required', 'string', 'max:255'],
             'where' => ['required', 'string', 'max:255'],
             'who' => ['required', 'string', 'max:255'],
-            'when' => ['required', 'date_format:Y-m-d H:i:s'],
+            'when' => ['required','date', 'date_format:Y-m-d H:i'],
             'details' => ['nullable', 'string', 'max:255'],
-            'image' => ['nullable', 'string', 'max:255'],
+            'image' => ['nullable', 'string'],
             'archive_status' => ['nullable', 'boolean']
         ];
     }

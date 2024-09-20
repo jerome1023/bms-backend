@@ -19,7 +19,7 @@ class AnnouncementResource extends JsonResource
             'what' => $this->what,
             'where' => $this->where,
             'who' => $this->who,
-            'when' => $this->when,
+            'when' => $this->when->format('Y-m-d g:i a'),
             'details' => $this->details,
             'image' => $this->image,
             'archive_status' => $this->archive_status

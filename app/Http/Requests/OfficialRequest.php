@@ -38,10 +38,9 @@ class OfficialRequest extends FormRequest
             'lastname' => 'required|string|max:255',
             'gender' => 'required|string|max:255',
             'position' => 'required|string|max:255',
-            'birthdate' => 'required|date',
-            // 'sitio_id' => 'required|string|max:255',
-            'start_term' => 'required|date',
-            'end_term' => 'required|date',
+            'birthdate' => 'required|date_format:Y-m-d',
+            'start_term' => 'required|date_format:Y-m-d',
+            'end_term' => 'required|date_format:Y-m-d',
             'archive_status' => 'nullable|boolean'
         ];
     }

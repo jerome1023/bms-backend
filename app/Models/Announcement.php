@@ -21,6 +21,10 @@ class Announcement extends Model
         'image',
         'archive_status'
     ];
+    
+    protected $casts = [
+        'when' => 'datetime',
+    ];
 
     public function user()
     {
