@@ -105,6 +105,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::get('/view/{id}', 'show');
         Route::post('/create', 'store');
         Route::put('/update/{id}', 'update');
+        Route::put('/solve/{id}', 'solve');
         Route::delete('/delete/{id}', 'destroy');
     });
 });

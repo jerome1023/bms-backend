@@ -32,10 +32,7 @@ class BlotterController extends Controller
             "complainee_contact_number" => $request->complainee_contact_number,
             "date" => $request->date,
             "complain" => $request->complain,
-            "agreement" => $request->agreement,
-            "namagitan" => $request->namagitan,
-            "witness" => $request->witness,
-            "status" => $request->status,
+            "status" => $request->status ?? 'Unsolve',
             'archive_status' => $request->archive_status ?? false
         ]);
 
@@ -53,7 +50,6 @@ class BlotterController extends Controller
         return $this->jsonResponse(true, 200, 'Data retrieved successfully', new BlotterResource($blotter));
     }
 
-
     public function update(BlotterRequest $request, $id)
     {
         $blotter = $this->findDataOrFail(Blotter::class, $id);
@@ -61,45 +57,50 @@ class BlotterController extends Controller
             return $blotter;
         }
 
-        if($request->agreement && $request->namagitan && $request->witness)
-        {
-            $validator = Validator::make($request->all(), [
-                'agreement' => 'required|string|max:255',
-                'namagitan' => 'required|string|max:255',
-                'witness' => 'required|string|max:255'
-            ]);
-    
-            if ($validator->fails()) {
-                return $this->jsonResponse(false, 400, 'Validation error', null, $validator->errors());
-            }
-
-            $blotter->update([
-                "agreement" => $request->agreement,
-                "namagitan" => $request->namagitan,
-                "witness" => $request->witness,
-                "status" => "solve",
-                'archive_status' => $request->archive_status ?? false,
-            ]);
-        }
-
-        else{
-            $blotter->update([
-                "complainant" => $request->complainant,
-                "complainant_age" => $request->complainant_age,
-                "complainant_address" => $request->complainant_address,
-                "complainant_contact_number" => $request->complainant_contact_number,
-                "complainee" => $request->complainee,
-                "complainee_age" => $request->complainee_age,
-                "complainee_address" => $request->complainee_address,
-                "complainee_contact_number" => $request->complainee_contact_number,
-                "date" => $request->date,
-                "complain" => $request->complain,
-                "status" => $request->status,
-                'archive_status' => $request->archive_status ?? false
-            ]);
-        }
+        $blotter->update([
+            "complainant" => $request->complainant,
+            "complainant_age" => $request->complainant_age,
+            "complainant_address" => $request->complainant_address,
+            "complainant_contact_number" => $request->complainant_contact_number,
+            "complainee" => $request->complainee,
+            "complainee_age" => $request->complainee_age,
+            "complainee_address" => $request->complainee_address,
+            "complainee_contact_number" => $request->complainee_contact_number,
+            "date" => $request->date,
+            "complain" => $request->complain,
+            "status" => $request->status,
+            'archive_status' => $request->archive_status ?? false
+        ]);
 
         return $this->jsonResponse(true, 200, 'Blotter updated successfully', $blotter);
+    }
+
+    public function solve(Request $request, $id)
+    {
+        $blotter = $this->findDataOrFail(Blotter::class, $id);
+        if ($blotter instanceof \Illuminate\Http\JsonResponse) {
+            return $blotter;
+        }
+
+        $validator = Validator::make($request->all(), [
+            'agreement' => 'required|string|max:255',
+            'namagitan' => 'required|string|max:255',
+            'witness' => 'required|string|max:255'
+        ]);
+
+        if ($validator->fails()) {
+            return $this->jsonResponse(false, 400, 'Validation error', null, $validator->errors());
+        }
+
+        $blotter->update([
+            "agreement" => $request->agreement,
+            "namagitan" => $request->namagitan,
+            "witness" => $request->witness,
+            "status" => "Solve",
+            'archive_status' => $request->archive_status ?? false,
+        ]);
+
+        return $this->jsonResponse(true, 200, 'Blotter solved successfully', $blotter);
     }
 
     public function destroy($id)
