@@ -6,14 +6,22 @@ use App\Models\Announcement;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AnnouncementRequest;
 use App\Http\Resources\AnnouncementResource;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
 class AnnouncementController extends Controller
 {
     public function index()
     {
-        $announcement = Announcement::all();
+        $announcement = Announcement::where('archive_status', false)->get();
+        return $this->jsonResponse(true, 200, 'Data retrieved successfully', AnnouncementResource::collection($announcement));
+    }
+
+    public function archive_list()
+    {
+        $announcement = Announcement::where('archive_status', true)->get();
         return $this->jsonResponse(true, 200, 'Data retrieved successfully', AnnouncementResource::collection($announcement));
     }
 
@@ -121,6 +129,28 @@ class AnnouncementController extends Controller
             'archive_status' => $request->archive_status ?? false
         ]);
         return $this->jsonResponse(true, 200, 'Announcement updated successfully', $announcement);
+    }
+
+    public function archive(Request $request, $id)
+    {
+        $announcement = $this->findDataOrFail(Announcement::class, $id);
+        if ($announcement instanceof \Illuminate\Http\JsonResponse) {
+            return $announcement;
+        }
+
+        $validator = Validator::make($request->all(), [
+            'archive_status' => 'required|boolean',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->jsonResponse(false, 400, 'Validation error', null, $validator->errors());
+        }
+
+        $announcement->update([
+            'archive_status' => $request->archive_status,
+        ]);
+
+        return $this->jsonResponse(true, 200, 'Announcement archived successfully');
     }
 
     public function destroy($id)

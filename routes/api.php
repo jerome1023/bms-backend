@@ -54,17 +54,21 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
     Route::controller(OfficialController::class)->prefix('/barangay-official')->group(function () {
         Route::get('/list', 'index');
+        Route::get('/archive_list', 'archive_list');
         Route::get('/view/{id}', 'show');
         Route::post('/create', 'store');
         Route::put('/update/{id}', 'update');
+        Route::put('/archive/{id}', 'archive');
         Route::delete('/delete/{id}', 'destroy');
     });
 
     Route::controller(ResidentController::class)->prefix('/resident')->group(function () {
         Route::get('/list', 'index');
+        Route::get('/archive_list', 'archive_list');
         Route::get('/view/{id}', 'show');
         Route::post('/create', 'store');
         Route::put('/update/{id}', 'update');
+        Route::put('/archive/{id}', 'archive');
         Route::delete('/delete/{id}', 'destroy');
     });
 
@@ -78,34 +82,42 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
     Route::controller(RequestController::class)->prefix('/request')->group(function () {
         Route::get('/list/{status}', 'index');
+        Route::get('/archive_list', 'archive_list');
         Route::get('/view/{id}', 'show');
         Route::post('/create', 'store');
         Route::put('/update/{id}', 'update');
+        Route::put('/archive/{id}', 'archive');
         Route::delete('/delete/{id}', 'destroy');
     });
 
     Route::controller(TransactionController::class)->prefix('/transaction')->group(function () {
         Route::get('/list', 'index');
+        Route::get('/archive_list', 'archive_list');
         Route::get('/view/{id}', 'show');
         Route::post('/create', 'store');
         Route::put('/update/{id}', 'update');
+        Route::put('/archive/{id}', 'archive');
         Route::delete('/delete/{id}', 'destroy');
     });
 
     Route::controller(AnnouncementController::class)->prefix('/announcement')->group(function () {
         Route::get('/list', 'index');
+        Route::get('/archive_list', 'archive_list');
         Route::get('/view/{id}', 'show');
         Route::post('/create', 'store');
         Route::put('/update/{id}', 'update');
+        Route::put('/archive/{id}', 'archive');
         Route::delete('/delete/{id}', 'destroy');
     });
 
     Route::controller(BlotterController::class)->prefix('/blotter')->group(function () {
         Route::get('/list', 'index');
+        Route::get('/archive_list', 'archive_list');
         Route::get('/view/{id}', 'show');
         Route::post('/create', 'store');
         Route::put('/update/{id}', 'update');
         Route::put('/solve/{id}', 'solve');
+        Route::put('/archive/{id}', 'archive');
         Route::delete('/delete/{id}', 'destroy');
     });
 });

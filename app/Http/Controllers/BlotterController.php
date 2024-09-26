@@ -14,7 +14,13 @@ class BlotterController extends Controller
 {
     public function index()
     {
-        $blotters = Blotter::all();
+        $blotters = Blotter::where('archive_status', false)->get();
+        return $this->jsonResponse(true, 200, 'Data retrieved successfully', BlotterResource::collection($blotters));
+    }
+
+    public function archive_list()
+    {
+        $blotters = Blotter::where('archive_status', true)->get();
         return $this->jsonResponse(true, 200, 'Data retrieved successfully', BlotterResource::collection($blotters));
     }
 
@@ -97,10 +103,31 @@ class BlotterController extends Controller
             "namagitan" => $request->namagitan,
             "witness" => $request->witness,
             "status" => "Solve",
-            'archive_status' => $request->archive_status ?? false,
         ]);
 
         return $this->jsonResponse(true, 200, 'Blotter solved successfully', $blotter);
+    }
+
+    public function archive(Request $request, $id)
+    {
+        $blotter = $this->findDataOrFail(Blotter::class, $id);
+        if ($blotter instanceof \Illuminate\Http\JsonResponse) {
+            return $blotter;
+        }
+
+        $validator = Validator::make($request->all(), [
+            'archive_status' => 'required|boolean',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->jsonResponse(false, 400, 'Validation error', null, $validator->errors());
+        }
+
+        $blotter->update([
+            'archive_status' => $request->archive_status,
+        ]);
+
+        return $this->jsonResponse(true, 200, 'Blotter archived successfully');
     }
 
     public function destroy($id)
