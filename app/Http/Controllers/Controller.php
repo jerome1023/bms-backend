@@ -17,7 +17,8 @@ class Controller extends BaseController
             return $model::findOrFail($key);
         } catch (ModelNotFoundException $exception) {
             return response()->json([
-                'status' => 404,
+                'status' => false,
+                'status_code' => 404,
                 'message' => $errorMessage
             ], 404);
         }
