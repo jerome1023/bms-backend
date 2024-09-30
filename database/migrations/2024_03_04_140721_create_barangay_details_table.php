@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('barangay_details', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('name');
-            $table->string('image');
-            $table->string('logo');
+            $table->string('image')->nullable();
+            $table->string('logo')->nullable();
         });
     }
 

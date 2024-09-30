@@ -24,8 +24,8 @@ class BarangayDetailsRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'image' => ['required', 'string', 'max:255'],
-            'logo' => ['required', 'string', 'max:255']
+            'image' => ['nullable', 'string', 'max:255'],
+            'logo' => ['nullable', 'string', 'max:255']
         ];
     }
 }

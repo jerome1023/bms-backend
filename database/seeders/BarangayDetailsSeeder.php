@@ -17,8 +17,8 @@ class BarangayDetailsSeeder extends Seeder
             [
                 'id' => Uuid::uuid4(),
                 'name' => 'Barangay Name',
-                'image' => 'Image',
-                'logo' => 'Logo'
+                'image' => '',
+                'logo' => ''
             ]
         ]);
     }

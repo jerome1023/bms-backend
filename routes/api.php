@@ -33,12 +33,12 @@ Route::controller(AuthController::class)->group(function () {
     Route::post('/login', 'login');
 });
 
-Route::middleware(['auth:sanctum', 'verified'])->group(function () {
+Route::controller(BarangayDetailsController::class)->prefix('/barangay_details')->group(function () {
+    Route::get('/list', 'index');
+    Route::put('/update/{id}', 'update');
+});
 
-    Route::controller(BarangayDetailsController::class)->prefix('/barangay_details')->group(function () {
-        Route::get('/list', 'index');
-        Route::put('/update/{id}', 'update');
-    });
+Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
     Route::controller(UserController::class)->prefix('/users')->group(function () {
         Route::get('/{id}', 'view');

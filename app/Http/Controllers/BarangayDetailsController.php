@@ -15,8 +15,8 @@ class BarangayDetailsController extends Controller
      */
     public function index()
     {
-        $details = BarangayDetails::all();
-        return $this->jsonResponse(true, 200, 'Data retrieved successfully', BarangayDetailsResource::collection($details));
+        $details = BarangayDetails::first();
+        return $this->jsonResponse(true, 200, 'Data retrieved successfully', new BarangayDetailsResource($details));
     }
 
     /**
