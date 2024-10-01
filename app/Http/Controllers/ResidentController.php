@@ -23,7 +23,7 @@ class ResidentController extends Controller
             return $this->jsonResponse(false, 409, 'Resident with the same name already exists');
         }
 
-        $sitio = $this->findDataOrFail(Sitio::class, $request->sitio_id, 'Sitio Not Found');
+        $sitio = $this->findDataOrFail(Sitio::class, $request->sitio, 'Sitio Not Found');
 
         if ($sitio instanceof \Illuminate\Http\JsonResponse) {
             return $sitio;

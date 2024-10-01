@@ -19,6 +19,7 @@ class OfficialResource extends JsonResource
             'firstname' => $this->firstname,
             'middlename' => $this->middlename,
             'lastname' => $this->lastname,
+            'fullname' => "{$this->firstname} {$this->middlename} {$this->lastname}",
             'gender' => $this->gender,
             'position' => $this->position,
             'birthdate' => $this->birthdate,
