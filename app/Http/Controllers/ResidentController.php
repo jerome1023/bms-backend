@@ -7,13 +7,21 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ResidentRequest;
 use App\Http\Resources\ResidentResource;
 use App\Models\Sitio;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
 class ResidentController extends Controller
 {
     public function index()
     {
-        $resident = Resident::all();
+        $resident = Resident::where('archive_status', false)->get();
+        return $this->jsonResponse(true, 200, 'Data retrieved successfully', ResidentResource::collection($resident));
+    }
+
+    public function archive_list()
+    {
+        $resident = Resident::where('archive_status', true)->get();
         return $this->jsonResponse(true, 200, 'Data retrieved successfully', ResidentResource::collection($resident));
     }
 
@@ -74,7 +82,7 @@ class ResidentController extends Controller
             return $this->jsonResponse(false, 409, 'Resident with the same name already exists');
         }
 
-        $sitio = $this->findDataOrFail(Sitio::class, $request->sitio_id, 'Sitio Not Found');
+        $sitio = $this->findDataOrFail(Sitio::class, $request->sitio, 'Sitio Not Found');
 
         if ($sitio instanceof \Illuminate\Http\JsonResponse) {
             return $sitio;
@@ -99,6 +107,28 @@ class ResidentController extends Controller
         ]);
 
         return $this->jsonResponse(true, 200, 'Resident updated successfully', $resident);
+    }
+
+    public function archive(Request $request, $id)
+    {
+        $resident = $this->findDataOrFail(Resident::class, $id);
+        if ($resident instanceof \Illuminate\Http\JsonResponse) {
+            return $resident;
+        }
+
+        $validator = Validator::make($request->all(), [
+            'archive_status' => 'required|boolean',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->jsonResponse(false, 400, 'Validation error', null, $validator->errors());
+        }
+
+        $resident->update([
+            'archive_status' => $request->archive_status,
+        ]);
+
+        return $this->jsonResponse(true, 200, 'Resident archived successfully');
     }
 
     public function destroy($id)

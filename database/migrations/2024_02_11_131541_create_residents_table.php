@@ -26,7 +26,7 @@ return new class extends Migration
             $table->string('house_number');
             $table->string('occupation');
             $table->string('nationality');
-            $table->boolean('voter_status');
+            $table->string('voter_status');
             $table->boolean('archive_status');
             $table->timestamps();
         });

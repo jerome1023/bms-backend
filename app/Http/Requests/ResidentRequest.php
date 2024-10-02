@@ -37,7 +37,7 @@ class ResidentRequest extends FormRequest
             'middlename' => 'required|string|max:255',
             'lastname' => 'required|string|max:255',
             'gender' => 'required|string|max:255',
-            'birthdate' => 'required|date',
+            'birthdate' => 'required|date|before:today',
             'birthplace' => 'required|string|max:255',
             'civil_status' => 'required|string|max:255',
             'religion' => 'required|string|max:255',
@@ -46,7 +46,7 @@ class ResidentRequest extends FormRequest
             'house_number' => 'required|string|max:255',
             'occupation' => 'required|string|max:255',
             'nationality' => 'required|string|max:255',
-            'voter_status' => 'required|boolean',
+            'voter_status' => 'required|string|max:255',
             'archive_status' => 'nullable|boolean'
         ];
     }

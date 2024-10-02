@@ -116,7 +116,7 @@ class OfficialController extends Controller
             'archive_status' => $request->archive_status,
         ]);
 
-        return $this->jsonResponse(true, 200, 'Official archived successfully', $official);
+        return $this->jsonResponse(true, 200, 'Official archived successfully');
     }
 
     public function destroy($id)
