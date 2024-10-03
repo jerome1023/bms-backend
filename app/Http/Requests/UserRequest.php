@@ -6,7 +6,7 @@ use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Foundation\Http\FormRequest;
 
-class TransactionRequest extends FormRequest
+class UserRequest extends FormRequest
 {
     protected function failedValidation(Validator $validator)
     {
@@ -32,12 +32,15 @@ class TransactionRequest extends FormRequest
      */
     public function rules(): array
     {
+        $userId = $this->route('id') ?? $this->input('id');
         return [
-            'fullname' => ['required', 'string', 'max:255' ],
-            'user_id' => ['nullable', 'string', 'max:255' ],
-            'document' => ['required', 'string', 'max:255' ],
-            'purpose' => ['required', 'string', 'max:255' ],
-            'archive_status' => ['nullable', 'boolean', 'max:255' ]
+            'firstname' => 'required|string',
+            'lastname' => 'required|string',
+            'address' => 'required|string',
+            'email' => 'required|email|unique:users,email,' . $userId,
+            'password' => 'nullable|min:6|same:confirm_password',
+            'confirm_password' => 'nullable|min:6',
+            'archive_status' => ['nullable', 'boolean',]
         ];
     }
 }

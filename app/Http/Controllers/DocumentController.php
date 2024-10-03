@@ -12,7 +12,7 @@ class DocumentController extends Controller
 {
     public function index()
     {
-        $document = Document::all();
+        $document = Document::orderBy('created_at')->get();
         return $this->jsonResponse(true, 200, 'Data retrieved successfully', DocumentResource::collection($document));
     }
 

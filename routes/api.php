@@ -42,7 +42,9 @@ Route::controller(BarangayDetailsController::class)->prefix('/barangay_details')
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
     Route::controller(UserController::class)->prefix('/users')->group(function () {
+        Route::get('/list', 'index');
         Route::get('/{id}', 'view');
+        Route::put('/update/{id}', 'update');
     });
 
     Route::controller(SitioController::class)->prefix('/sitio')->group(function () {

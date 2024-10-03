@@ -27,7 +27,7 @@ class ResidentResource extends JsonResource
             'religion' => $this->religion,
             'educational_attainment' => $this->educational_attainment,
             'sitio' => $this->sitio->id,
-            'sitio_details' => new SitioResource($this->sitio),
+            'sitio_name' => $this->sitio->name,
             'house_number' => $this->house_number,
             'occupation' => $this->occupation,
             'nationality' => $this->nationality,

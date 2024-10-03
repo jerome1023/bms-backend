@@ -19,7 +19,7 @@ class TransactionController extends Controller
      */
     public function index()
     {
-        $transaction = Transaction::all();
+        $transaction = Transaction::where('archive_status', false)->orderBy('created_at')->get();
         return $this->jsonResponse(true, 200, 'Data retrieved successfully', TransactionResource::collection($transaction));
     }
 
@@ -28,24 +28,29 @@ class TransactionController extends Controller
      */
     public function store(TransactionRequest $request)
     {
-        $document = $this->findDataOrFail(Document::class, $request->document_id);
+        $document = $this->findDataOrFail(Document::class, $request->document);
 
         if ($document instanceof \Illuminate\Http\JsonResponse) {
             return $document;
         }
 
-        $validationError = $this->validateRequestDocument($request, $document);
-        if ($validationError ) {
+            $validationError = $this->validateRequestDocument($request, $document);
+        if ($validationError) {
             return $validationError;
+        }
+
+        $price = 0;
+        if ($request->purpose != 'School Requirement') {
+            $price = $document->price;
         }
 
         Transaction::create([
             'id' => Str::uuid(),
             'fullname' => $request->fullname,
             'user_id' => $request->user_id,
-            'document_id' => $request->document_id,
+            'document_id' => $document->id,
             'purpose' => $request->purpose,
-            'price' => $request->price,
+            'price' => $price,
             'archive_status' => $request->archive_status ?? false
         ]);
 
@@ -75,25 +80,52 @@ class TransactionController extends Controller
             return $transaction;
         }
 
-        $document = $this->findDataOrFail(Document::class, $request->document_id);
+        $document = $this->findDataOrFail(Document::class, $request->document);
         if ($document instanceof \Illuminate\Http\JsonResponse) {
             return $document;
         }
 
         $validationError = $this->validateRequestDocument($request, $document);
-        if ($validationError ) {
+        if ($validationError) {
             return $validationError;
+        }
+
+        $price = 0;
+        if ($request->purpose != 'School Requirement') {
+            $price = $document->price;
         }
 
         $transaction->update([
             'fullname' => $request->fullname,
-            'document_id' => $request->document_id,
+            'document_id' => $request->document,
             'purpose' => $request->purpose,
-            'price' => $request->price,
+            'price' => $price,
             'archive_status' => $request->archive_status ?? false
         ]);
 
         return $this->jsonResponse(true, 201, 'Transaction updated successfully', $transaction);
+    }
+
+    public function archive(Request $request, $id)
+    {
+        $transaction = $this->findDataOrFail(Transaction::class, $id);
+        if ($transaction instanceof \Illuminate\Http\JsonResponse) {
+            return $transaction;
+        }
+
+        $validator = Validator::make($request->all(), [
+            'archive_status' => 'required|boolean',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->jsonResponse(false, 400, 'Validation error', null, $validator->errors());
+        }
+
+        $transaction->update([
+            'archive_status' => $request->archive_status,
+        ]);
+
+        return $this->jsonResponse(true, 200, 'Transaction archived successfully');
     }
 
     /**
@@ -112,29 +144,28 @@ class TransactionController extends Controller
 
     private function validateRequestDocument($request, $document)
     {
-        $purpose = ['work', 'school_requirement', 'business', 'others'];
+        $purpose = ['Work', 'School Requirement', 'Business', 'Others'];
 
         if (!in_array($request->purpose, $purpose)) {
             return $this->jsonResponse(false, 400, 'Invalid purpose');
         }
 
-        if ($request->purpose == 'school_requirement') {
+        if ($request->purpose == 'School Requirement') {
             $acceptedDocuments = ['Barangay Clearance', 'Barangay Residency', 'Barangay Certificate'];
             if (!in_array($document->name, $acceptedDocuments)) {
                 return $this->jsonResponse(false, 400, 'The document is not accepted for school requirements');
             }
-
         }
 
-        if ($request->purpose == 'business') {
-            $validator = Validator::make($request->all(), [
-                'price' => 'required|integer'
-            ]);
+        // if ($request->purpose == 'Business') {
+        //     $validator = Validator::make($request->all(), [
+        //         'price' => 'required|integer'
+        //     ]);
 
-            if ($validator->fails()) {
-                return $this->jsonResponse(false, 400, 'Validation error', null, $validator->errors());
-            }
-        }
+        //     if ($validator->fails()) {
+        //         return $this->jsonResponse(false, 400, 'Validation error', null, $validator->errors());
+        //     }
+        // }
 
         return null;
     }
