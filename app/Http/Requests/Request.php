@@ -11,7 +11,8 @@ class Request extends FormRequest
     protected function failedValidation(Validator $validator)
     {
         throw new HttpResponseException(response()->json([
-            'status' => 400,
+            'status' => false,
+            'status_code' => 400,
             'message' => 'Validation error',
             'errors' => $validator->errors()->toArray()
         ], 400));
@@ -34,9 +35,9 @@ class Request extends FormRequest
         return [
             'fullname' => 'required|string|max:255',
             'age' => 'required|integer',
-            'document_id' => 'required|string|max:255',
+            'document' => 'required|string|max:255',
             'purpose' => 'required|string|max:255',
-            'sitio_id' => 'required|string|max:255',
+            'sitio' => 'required|string|max:255',
             'income' => 'nullable|integer',
             'status' => 'nullable|string|max:255',
             'archive_status' => 'nullable|boolean'

@@ -19,7 +19,7 @@ class RequestController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index($status)
+    public function index($status, Authenticatable $user)
     {
         $allowedStatus = ['pending', 'approved', 'disapproved', 'completed'];
 
@@ -27,10 +27,30 @@ class RequestController extends Controller
             return $this->jsonResponse(false, 400, 'Invalid status');
         }
 
-        $requests = Request::where('status', $status)->get();
+        $query = Request::where('status', $status)
+            ->where('archive_status', false);
+
+        if ($user->role->name !== "Administrator") {
+            $query->where('user_id', $user->id);
+        }
+
+        $requests = $query->get();
         return $this->jsonResponse(true, 200, 'Data retrieved successfully', RequestResource::collection($requests));
     }
 
+    public function archive_list($status)
+    {
+        $allowedStatus = ['pending', 'approved', 'disapproved', 'completed'];
+
+        if (!in_array($status, $allowedStatus)) {
+            return $this->jsonResponse(false, 400, 'Invalid status');
+        }
+
+        $requests = Request::where('status', $status)
+            ->where('archive_status', false)->get();
+
+        return $this->jsonResponse(true, 200, 'Data retrieved successfully', RequestResource::collection($requests));
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -49,7 +69,7 @@ class RequestController extends Controller
             return $this->jsonResponse(false, 403, 'Unauthorized to request');
         }
 
-        $document = $this->findDataOrFail(Document::class, $request->document_id, 'Document Not Found');
+        $document = $this->findDataOrFail(Document::class, $request->document, 'Document Not Found');
         if ($document instanceof \Illuminate\Http\JsonResponse) {
             return $document;
         }
@@ -59,9 +79,9 @@ class RequestController extends Controller
             return $validationError;
         }
 
-        $price = $request->purpose !== 'school_requirement' ? $document->price : 0;
+        $price = $request->purpose !== 'School Requirement' ? $document->price : 0;
 
-        $sitio = $this->findDataOrFail(Sitio::class, $request->sitio_id, 'Sitio Not Found');
+        $sitio = $this->findDataOrFail(Sitio::class, $request->sitio, 'Sitio Not Found');
         if ($sitio instanceof \Illuminate\Http\JsonResponse) {
             return $sitio;
         }
@@ -122,7 +142,7 @@ class RequestController extends Controller
             return $requestDocument;
         }
 
-        $document = $this->findDataOrFail(Document::class, $request->document_id, 'Document Not Found');
+        $document = $this->findDataOrFail(Document::class, $request->document, 'Document Not Found');
         if ($document instanceof \Illuminate\Http\JsonResponse) {
             return $document;
         }
@@ -132,9 +152,9 @@ class RequestController extends Controller
             return $validationError;
         }
 
-        $price = $request->purpose !== 'school_requirement' ? $document->price : 0;
+        $price = $request->purpose !== 'School Requirement' ? $document->price : 0;
 
-        $sitio = $this->findDataOrFail(Sitio::class, $request->sitio_id, 'Sitio Not Found');
+        $sitio = $this->findDataOrFail(Sitio::class, $request->sitio, 'Sitio Not Found');
         if ($sitio instanceof \Illuminate\Http\JsonResponse) {
             return $sitio;
         }
@@ -176,20 +196,20 @@ class RequestController extends Controller
 
     private function validateRequestDocument($request, $document)
     {
-        $purpose = ['work', 'school_requirement', 'business', 'others'];
+        $purpose = ['Work', 'School Requirement', 'Business', 'Others'];
 
         if (!in_array($request->purpose, $purpose)) {
             return $this->jsonResponse(false, 400, 'Invalid purpose');
         }
 
-        if ($request->purpose == 'school_requirement') {
+        if ($request->purpose == 'School Requirement') {
             $acceptedDocuments = ['Barangay Clearance', 'Barangay Residency', 'Barangay Certificate'];
             if (!in_array($document->name, $acceptedDocuments)) {
                 return $this->jsonResponse(false, 400, 'The document is not accepted for school requirements');
             }
         }
 
-        if ($request->purpose == 'business') {
+        if ($request->purpose == 'Business') {
             $validator = Validator::make($request->all(), [
                 'income' => 'required|integer'
             ]);

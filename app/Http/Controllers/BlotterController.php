@@ -38,7 +38,7 @@ class BlotterController extends Controller
             "complainee_contact_number" => $request->complainee_contact_number,
             "date" => $request->date,
             "complain" => $request->complain,
-            "status" => $request->status ?? 'Unsolve',
+            "status" => $request->status ?? 'unsolve',
             'archive_status' => $request->archive_status ?? false
         ]);
 
@@ -102,7 +102,7 @@ class BlotterController extends Controller
             "agreement" => $request->agreement,
             "namagitan" => $request->namagitan,
             "witness" => $request->witness,
-            "status" => "Solve",
+            "status" => "solve",
         ]);
 
         return $this->jsonResponse(true, 200, 'Blotter solved successfully', $blotter);

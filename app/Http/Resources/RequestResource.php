@@ -19,13 +19,15 @@ class RequestResource extends JsonResource
             'user_id' => $this->user_id,
             'fullname' => $this->fullname,
             'age' => $this->age,
-            'document_id' => new DocumentResource($this->document),
+            'document' => $this->document->id,
+            'document_name' => $this->document->name,
             'purpose' => $this->purpose,
-            'sitio_id' => new SitioResource($this->sitio),
+            'sitio' => $this->sitio->id,
+            'sitio_name' => $this->sitio->name,
             'income' => $this->income,
+            'price' => $this->price,
             'status' => $this->status,
-            'archive_status' => $this->archive_status,
-            'created_at' => $this->created_at
+            // 'created_at' => $this->created_at
         ];
     }
 }
