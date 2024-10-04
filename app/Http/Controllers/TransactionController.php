@@ -8,6 +8,7 @@ use App\Http\Requests\TransactionRequest;
 use App\Http\Resources\TransactionResource;
 use App\Models\Document;
 use App\Models\User;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -17,9 +18,25 @@ class TransactionController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Authenticatable $user)
     {
-        $transaction = Transaction::where('archive_status', false)->orderBy('created_at')->get();
+        if ($user->role->name === 'Administrator') {
+            $transaction = Transaction::where('archive_status', false)
+                ->orderBy('created_at')
+                ->get();
+        } else {
+            $transaction = Transaction::where('archive_status', false)
+                ->where('user_id', $user->id)
+                ->orderBy('created_at')
+                ->get();
+        }
+
+        return $this->jsonResponse(true, 200, 'Data retrieved successfully', TransactionResource::collection($transaction));
+    }
+
+    public function archive_list()
+    {
+        $transaction = Transaction::where('archive_status', true)->get();
         return $this->jsonResponse(true, 200, 'Data retrieved successfully', TransactionResource::collection($transaction));
     }
 
@@ -34,7 +51,7 @@ class TransactionController extends Controller
             return $document;
         }
 
-            $validationError = $this->validateRequestDocument($request, $document);
+        $validationError = $this->validateRequestDocument($request, $document);
         if ($validationError) {
             return $validationError;
         }
