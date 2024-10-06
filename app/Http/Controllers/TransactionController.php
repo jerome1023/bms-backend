@@ -123,24 +123,15 @@ class TransactionController extends Controller
         return $this->jsonResponse(true, 201, 'Transaction updated successfully', $transaction);
     }
 
-    public function archive(Request $request, $id)
+    public function archive($id)
     {
         $transaction = $this->findDataOrFail(Transaction::class, $id);
         if ($transaction instanceof \Illuminate\Http\JsonResponse) {
             return $transaction;
         }
 
-        $validator = Validator::make($request->all(), [
-            'archive_status' => 'required|boolean',
-        ]);
-
-        if ($validator->fails()) {
-            return $this->jsonResponse(false, 400, 'Validation error', null, $validator->errors());
-        }
-
-        $transaction->update([
-            'archive_status' => $request->archive_status,
-        ]);
+        $transaction->archive_status = true;
+        $transaction->save();
 
         return $this->jsonResponse(true, 200, 'Transaction archived successfully');
     }

@@ -7,7 +7,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Request as RequestsRequest;
 use App\Http\Resources\RequestResource;
 use App\Models\Document;
-use App\Models\Role;
 use App\Models\Sitio;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Validator;
@@ -47,7 +46,7 @@ class RequestController extends Controller
         }
 
         $requests = Request::where('status', $status)
-            ->where('archive_status', false)->get();
+            ->where('archive_status', true)->get();
 
         return $this->jsonResponse(true, 200, 'Data retrieved successfully', RequestResource::collection($requests));
     }
@@ -57,13 +56,6 @@ class RequestController extends Controller
      */
     public function store(RequestsRequest $request, Authenticatable $user)
     {
-        // $user = Auth::user();
-
-        // dd($user->role->name);
-        // $role = $this->findDataOrFail(Role::class, $user->role_id, 'Role Not Found');
-        // if ($role instanceof \Illuminate\Http\JsonResponse) {
-        //     return $role;
-        // }
 
         if ($user->role->name !== 'User') {
             return $this->jsonResponse(false, 403, 'Unauthorized to request');
@@ -128,11 +120,6 @@ class RequestController extends Controller
 
         $user = Auth::user();
 
-        // $role = $this->findDataOrFail(Role::class, $user->role_id, 'Role Not Found');
-        // if ($role instanceof \Illuminate\Http\JsonResponse) {
-        //     return $role;
-        // }
-
         if ($user->role->name !== 'User') {
             return $this->jsonResponse(false, 403, 'Unauthorized to request');
         }
@@ -176,6 +163,32 @@ class RequestController extends Controller
         ]);
 
         return $this->jsonResponse(true, 201, 'Requested Document updated successfully');
+    }
+
+    public function updateStatus($id, $status)
+    {
+        $requestDocument = $this->findDataOrFail(Request::class, $id);
+        if ($requestDocument instanceof \Illuminate\Http\JsonResponse) {
+            return $requestDocument;
+        }
+
+        $requestDocument->status = $status;
+        $requestDocument->save();
+
+        return $this->jsonResponse(true, 201, "Requested Document {$status} successfully");
+    }
+
+    public function archive($id)
+    {
+        $requestDetails = $this->findDataOrFail(Request::class, $id);
+        if ($requestDetails instanceof \Illuminate\Http\JsonResponse) {
+            return $requestDetails;
+        }
+
+        $requestDetails->archive_status = true;
+        $requestDetails->save();
+
+        return $this->jsonResponse(true, 200, 'Request archived successfully');
     }
 
     /**

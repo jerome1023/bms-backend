@@ -131,24 +131,15 @@ class AnnouncementController extends Controller
         return $this->jsonResponse(true, 200, 'Announcement updated successfully', $announcement);
     }
 
-    public function archive(Request $request, $id)
+    public function archive($id)
     {
         $announcement = $this->findDataOrFail(Announcement::class, $id);
         if ($announcement instanceof \Illuminate\Http\JsonResponse) {
             return $announcement;
         }
 
-        $validator = Validator::make($request->all(), [
-            'archive_status' => 'required|boolean',
-        ]);
-
-        if ($validator->fails()) {
-            return $this->jsonResponse(false, 400, 'Validation error', null, $validator->errors());
-        }
-
-        $announcement->update([
-            'archive_status' => $request->archive_status,
-        ]);
+        $announcement->archive_status = true;
+        $announcement->save();
 
         return $this->jsonResponse(true, 200, 'Announcement archived successfully');
     }

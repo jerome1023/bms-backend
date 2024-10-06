@@ -96,7 +96,7 @@ class OfficialController extends Controller
         return $this->jsonResponse(true, 200, 'Official updated successfully', $official);
     }
 
-    public function archive(Request $request, $id)
+    public function archive($id)
     {
         $official = $this->findDataOrFail(Official::class, $id);
 
@@ -104,17 +104,8 @@ class OfficialController extends Controller
             return $official;
         }
 
-        $validator = Validator::make($request->all(), [
-            'archive_status' => 'required|boolean',
-        ]);
-
-        if ($validator->fails()) {
-            return $this->jsonResponse(false, 400, 'Validation error', null, $validator->errors());
-        }
-
-        $official->update([
-            'archive_status' => $request->archive_status,
-        ]);
+        $official->archive_status = true;
+        $official->save();
 
         return $this->jsonResponse(true, 200, 'Official archived successfully');
     }

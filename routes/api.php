@@ -85,10 +85,11 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
     Route::controller(RequestController::class)->prefix('/request')->group(function () {
         Route::get('/list/{status}', 'index');
-        Route::get('/archive_list', 'archive_list');
+        Route::get('/archive_list/{status}', 'archive_list');
         Route::get('/view/{id}', 'show');
         Route::post('/create', 'store');
         Route::put('/update/{id}', 'update');
+        Route::put('/update-status/{id}/{status}', 'updateStatus');
         Route::put('/archive/{id}', 'archive');
         Route::delete('/delete/{id}', 'destroy');
     });

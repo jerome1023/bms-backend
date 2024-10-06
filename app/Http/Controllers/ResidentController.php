@@ -109,24 +109,15 @@ class ResidentController extends Controller
         return $this->jsonResponse(true, 200, 'Resident updated successfully', $resident);
     }
 
-    public function archive(Request $request, $id)
+    public function archive($id)
     {
         $resident = $this->findDataOrFail(Resident::class, $id);
         if ($resident instanceof \Illuminate\Http\JsonResponse) {
             return $resident;
         }
 
-        $validator = Validator::make($request->all(), [
-            'archive_status' => 'required|boolean',
-        ]);
-
-        if ($validator->fails()) {
-            return $this->jsonResponse(false, 400, 'Validation error', null, $validator->errors());
-        }
-
-        $resident->update([
-            'archive_status' => $request->archive_status,
-        ]);
+        $resident->archive_status = true;
+        $resident->save();
 
         return $this->jsonResponse(true, 200, 'Resident archived successfully');
     }
