@@ -17,13 +17,12 @@ RUN apt-get update && apt-get install -y \
     git \
     unzip \
     libpq-dev \
-    libzip-dev
-
-# Clear cache
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+    libzip-dev \
+    && apt-get clean && rm -rf /var/lib/apt/lists/* 
 
 # Install PHP extensions
-RUN docker-php-ext-install pdo pdo_pgsql pgsql mbstring exif pcntl bcmath gd zip
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install pdo pdo_pgsql pgsql mbstring exif pcntl bcmath gd zip
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -31,13 +30,23 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Copy existing application directory contents to the working directory
 COPY . /var/www
 
-# RUN composer install
+# Install dependencies with Composer
+#production
+RUN composer install --no-dev --optimize-autoloader 
+
+# Copy entrypoint script
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+
+# Make the entrypoint script executable
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+# Set the entrypoint to run migrations and start PHP-FPM
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
 # Set file permissions for Laravel
 RUN chown -R www-data:www-data /var/www \
     && chmod -R 755 /var/www/storage \
     && chmod -R 755 /var/www/bootstrap/cache
 
-# Expose port 9000 and start PHP-FPM server
+# Expose port 9000 for PHP-FPM
 EXPOSE 9000
-CMD ["php-fpm"]
