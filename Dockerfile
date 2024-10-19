@@ -32,7 +32,7 @@ COPY . /var/www
 
 # Install dependencies with Composer
 #production
-RUN composer install --no-dev --optimize-autoloader 
+# RUN composer install --no-dev --optimize-autoloader
 
 # Copy entrypoint script
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
