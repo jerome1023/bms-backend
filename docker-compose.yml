@@ -18,7 +18,7 @@ services:
       - postgres
     environment:
       - DB_CONNECTION=pgsql
-      - DB_HOST=postgres
+      - DB_HOST=dpg-cs9l9u3qf0us739i30m0-a
       - DB_PORT=5432
       - DB_DATABASE=${DB_DATABASE}
       - DB_USERNAME=${DB_USERNAME}
