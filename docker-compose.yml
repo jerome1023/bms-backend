@@ -14,6 +14,8 @@ services:
 
     networks:
       - bms-backend_laravel
+    expose:
+    - "9000"  # Expose port 9000 internally for Nginx
     depends_on:
       - postgres
     environment:
