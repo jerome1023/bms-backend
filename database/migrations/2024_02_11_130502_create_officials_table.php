@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('official', function (Blueprint $table) {
+        Schema::create('officials', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('firstname');
             $table->string('middlename');
@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('gender');
             $table->string('position');
             $table->date('birthdate');
-            $table->foreignUuid('sitio_id')->constrained('sitio');
+            // $table->foreignUuid('sitio_id')->constrained('sitios');
             $table->date('start_term');
             $table->date('end_term');
             $table->boolean('archive_status');
@@ -32,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('official');
+        Schema::dropIfExists('officials');
     }
 };

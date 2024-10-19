@@ -49,12 +49,12 @@ class AuthController extends Controller
             'password' => 'required|min:6',
             'role' => 'required|string|exists:roles,name'
         ];
-        
+
         if ($request->role == 'User') {
             $validateRules['address'] = 'required|string';
             $validateRules['gender'] = 'required|string';
         }
-        
+
         $validateUser = Validator::make($request->all(), $validateRules);
 
         if ($validateUser->fails()) {
@@ -86,5 +86,12 @@ class AuthController extends Controller
             'token' => $user->createToken("API TOKEN")->plainTextToken,
             'status_code' => Response::HTTP_CREATED
         ], Response::HTTP_CREATED);
+    }
+
+    public function logout(Request $request)
+    {
+        $request->user()->currentAccessToken()->delete();
+
+        return response()->json(['status' => true, 'message' => 'Logged out successfully','status_code' => Response::HTTP_OK], Response::HTTP_OK);
     }
 }

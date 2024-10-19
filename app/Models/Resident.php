@@ -9,6 +9,10 @@ class Resident extends Model
 {
     use HasFactory;
 
+    // protected $table = 'resident';
+    protected $keyType = 'string';
+    public $incrementing = false;
+
     protected $fillable = [
         'id',
         'firstname',
@@ -19,7 +23,7 @@ class Resident extends Model
         'birthplace',
         'civil_status',
         'religion',
-        'educational_status',
+        'educational_attainment',
         'sitio_id',
         'house_number',
         'occupation',
@@ -30,6 +34,6 @@ class Resident extends Model
 
     public function sitio()
     {
-        return $this->belongsTo(Sitio::class);
+        return $this->belongsTo(Sitio::class, 'sitio_id');
     }
 }

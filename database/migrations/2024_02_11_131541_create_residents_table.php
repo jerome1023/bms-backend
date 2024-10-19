@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('resident', function (Blueprint $table) {
+        Schema::create('residents', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('firstname');
             $table->string('middlename');
@@ -22,11 +22,11 @@ return new class extends Migration
             $table->string('civil_status');
             $table->string('religion');
             $table->string('educational_attainment');
-            $table->foreignUuid('sitio_id')->constrained('sitio');
+            $table->foreignUuid('sitio_id')->constrained('sitios');
             $table->string('house_number');
             $table->string('occupation');
             $table->string('nationality');
-            $table->boolean('voter_status');
+            $table->string('voter_status');
             $table->boolean('archive_status');
             $table->timestamps();
         });
@@ -37,6 +37,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('resident');
+        Schema::dropIfExists('residents');
     }
 };

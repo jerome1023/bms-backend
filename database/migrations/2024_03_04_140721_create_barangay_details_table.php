@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('sitio', function (Blueprint $table) {
+        Schema::create('barangay_details', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('name');
+            $table->string('image')->nullable();
+            $table->string('logo')->nullable();
         });
     }
 
@@ -22,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('sitio');
+        Schema::dropIfExists('barangay_details');
     }
 };

@@ -2,28 +2,22 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Request extends Model
+class Transaction extends Model
 {
-    use HasFactory;
-
-    protected $primaryKey = 'id';
-    public $incrementing = false;
+    use HasFactory, HasUuids;
 
     protected $fillable = [
         'id',
         'fullname',
         'user_id',
-        'age',
         'document_id',
         'purpose',
-        'sitio_id',
-        'income',
         'price',
-        'status',
-        'archive_status',
+        'archive_status'
     ];
 
     public function user()
@@ -34,10 +28,5 @@ class Request extends Model
     public function document()
     {
         return $this->belongsTo(Document::class, 'document_id');
-    }
-
-    public function sitio()
-    {
-        return $this->belongsTo(Sitio::class, 'sitio_id');
     }
 }

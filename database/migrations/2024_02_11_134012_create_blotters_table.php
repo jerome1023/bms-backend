@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('blotter', function (Blueprint $table) {
+        Schema::create('blotters', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('complainant');
             $table->string('complainant_age');
@@ -24,7 +24,7 @@ return new class extends Migration
             $table->date('date');
             $table->string('complain');
             $table->string('agreement')->nullable();
-            $table->foreignUuid('namagitan')->constrained('official')->nullable();
+            $table->string('namagitan')->nullable();
             $table->string('witness')->nullable();
             $table->string('status');
             $table->boolean('archive_status');
@@ -37,6 +37,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('blotter');
+        Schema::dropIfExists('blotters');
     }
 };

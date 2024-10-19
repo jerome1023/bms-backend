@@ -11,15 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('request', function (Blueprint $table) {
+        Schema::create('transactions', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('user_id')->constrained('users');
-            $table->integer('age');
-            $table->foreignUuid('document_id')->constrained('document');
+            $table->string('fullname')->nullable();
+            $table->string('user_id')->nullable();
+            $table->foreignUuid('document_id')->constrained('documents');
             $table->string('purpose');
-            $table->foreignUuid('sitio_id')->constrained('sitio');
-            $table->integer('income')->nullable();
-            $table->string('status');
+            $table->integer('price');
             $table->boolean('archive_status');
             $table->timestamps();
         });
@@ -30,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('request');
+        Schema::dropIfExists('transactions');
     }
 };
