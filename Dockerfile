@@ -32,7 +32,7 @@ COPY . /var/www
 
 # Install dependencies with Composer
 #production
-# RUN composer install --no-dev --optimize-autoloader
+RUN composer install --no-dev --optimize-autoloader
 
 # Copy entrypoint script
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
@@ -50,4 +50,3 @@ RUN chown -R www-data:www-data /var/www \
 
 # Expose port 9000 for PHP-FPM
 EXPOSE 9000
-# EXPOSE 80
