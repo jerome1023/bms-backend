@@ -16,13 +16,13 @@ services:
       - bms-backend_laravel
     expose:
     - "9000"  # Expose port 9000 internally for Nginx
-    depends_on:
-      postgres:
-        condition: service_healthy
+    # depends_on:
+    #   postgres:
+    #     condition: service_healthy
     environment:
       - DB_CONNECTION=pgsql
       # - DB_HOST=dpg-cs9l9u3qf0us739i30m0-a
-      - BB_HOST=postgres
+      - DB_HOST=host.docker.internal
       - DB_PORT=5432
       - DB_DATABASE=${DB_DATABASE}
       - DB_USERNAME=${DB_USERNAME}
@@ -32,6 +32,7 @@ services:
       - APP_ENV=local
       # - APP_ENV=production
       - APP_KEY=${APP_KEY}
+    entrypoint: ["/usr/local/bin/entrypoint.sh"]
 
   nginx:
     image: nginx:latest
@@ -48,25 +49,25 @@ services:
     depends_on:
       - app
 
-  postgres:
-    image: postgres:15
-    container_name: postgres
-    restart: always
-    environment:
-      POSTGRES_DB: ${DB_DATABASE}
-      POSTGRES_USER: ${DB_USERNAME}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
-    networks:
-      - bms-backend_laravel
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+  # postgres:
+  #   image: postgres:15
+  #   container_name: postgres
+  #   restart: always
+  #   environment:
+  #     POSTGRES_DB: ${DB_DATABASE}
+  #     POSTGRES_USER: ${DB_USERNAME}
+  #     POSTGRES_PASSWORD: ${DB_PASSWORD}
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   ports:
+  #     - "5432:5432"
+  #   networks:
+  #     - bms-backend_laravel
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME}"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
 
 volumes:
   postgres_data:
