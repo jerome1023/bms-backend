@@ -180,7 +180,7 @@ class RequestController extends Controller
         return $this->jsonResponse(true, 201, "Requested Document {$status} successfully");
     }
 
-    public function archive($id, $status)
+    public function archive_status($id, $status)
     {
         $status = filter_var($status, FILTER_VALIDATE_BOOLEAN);
 

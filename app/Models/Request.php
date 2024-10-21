@@ -28,6 +28,10 @@ class Request extends Model
         'date',
     ];
 
+    protected $casts = [
+        'date' => 'datetime',
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
