@@ -23,7 +23,9 @@ class Request extends Model
         'income',
         'price',
         'status',
+        'reason',
         'archive_status',
+        'date',
     ];
 
     public function user()

@@ -27,6 +27,8 @@ class RequestResource extends JsonResource
             'income' => $this->income,
             'price' => $this->price,
             'status' => $this->status,
+            'reason' => $this->reason,
+            'date' => $this->date,
             // 'created_at' => $this->created_at
         ];
     }
