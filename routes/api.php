@@ -90,6 +90,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::post('/create', 'store');
         Route::put('/update/{id}', 'update');
         Route::put('/update-status/{id}/{status}', 'updateStatus');
+        Route::put('/complete/{id}', 'complete');
         Route::put('/archive_status/{id}/{status}', 'archive_status');
         Route::delete('/delete/{id}', 'destroy');
     });
