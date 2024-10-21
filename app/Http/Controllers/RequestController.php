@@ -8,7 +8,9 @@ use App\Http\Requests\Request as RequestsRequest;
 use App\Http\Resources\RequestResource;
 use App\Models\Document;
 use App\Models\Sitio;
+use Carbon\Carbon;
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Http\Request as HttpRequest;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -165,14 +167,26 @@ class RequestController extends Controller
         return $this->jsonResponse(true, 201, 'Requested Document updated successfully');
     }
 
-    public function updateStatus($id, $status)
+    public function updateStatus(HttpRequest $request, $id, $status)
     {
         $requestDocument = $this->findDataOrFail(Request::class, $id);
         if ($requestDocument instanceof \Illuminate\Http\JsonResponse) {
             return $requestDocument;
         }
+        
+        if($status === 'disapproved'){
+            $validator = Validator::make($request->all(), [
+                'reason' => 'required|string|max:255',
+            ]);
+    
+            if ($validator->fails()) {
+                return $this->jsonResponse(false, 400, 'Validation error', null, $validator->errors());
+            }
 
+            $requestDocument->reason = $request->reason;
+        }
         $requestDocument->status = $status;
+        $requestDocument->date = Carbon::now();
         $requestDocument->save();
 
         return $this->jsonResponse(true, 201, "Requested Document {$status} successfully");

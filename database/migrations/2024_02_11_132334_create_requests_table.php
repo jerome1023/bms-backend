@@ -22,7 +22,9 @@ return new class extends Migration
             $table->integer('income')->nullable();
             $table->integer('price');
             $table->string('status');
+            $table->string('reason')->nullable();
             $table->boolean('archive_status');
+            $table->dateTime('date')->nullable();
             $table->timestamps();
         });
     }
