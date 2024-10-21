@@ -6,9 +6,7 @@ use App\Models\Announcement;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AnnouncementRequest;
 use App\Http\Resources\AnnouncementResource;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
 class AnnouncementController extends Controller
@@ -62,9 +60,6 @@ class AnnouncementController extends Controller
         return $this->jsonResponse(true, 201, 'Announcement created successfully');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show($id)
     {
         $announcement = $this->findDataOrFail(Announcement::class, $id);
@@ -72,7 +67,6 @@ class AnnouncementController extends Controller
             return $announcement;
         }
         return $this->jsonResponse(true, 201, 'Data retrieved successfully', new AnnouncementResource($announcement));
-        //
     }
 
     public function update(AnnouncementRequest $request, $id)
@@ -131,17 +125,20 @@ class AnnouncementController extends Controller
         return $this->jsonResponse(true, 200, 'Announcement updated successfully', $announcement);
     }
 
-    public function archive($id)
+    public function archive_status($id, $status)
     {
+        $status = filter_var($status, FILTER_VALIDATE_BOOLEAN);
+
         $announcement = $this->findDataOrFail(Announcement::class, $id);
         if ($announcement instanceof \Illuminate\Http\JsonResponse) {
             return $announcement;
         }
 
-        $announcement->archive_status = true;
+        $announcement->archive_status = $status;
         $announcement->save();
 
-        return $this->jsonResponse(true, 200, 'Announcement archived successfully');
+        $message = $status ? 'archive' : 'restore';
+        return $this->jsonResponse(true, 200, "Announcement {$message} successfully");
     }
 
     public function destroy($id)

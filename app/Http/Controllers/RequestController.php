@@ -17,9 +17,6 @@ use Illuminate\Support\Str;
 
 class RequestController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index($status, Authenticatable $user)
     {
         $allowedStatus = ['pending', 'approved', 'disapproved', 'completed'];
@@ -53,9 +50,6 @@ class RequestController extends Controller
         return $this->jsonResponse(true, 200, 'Data retrieved successfully', RequestResource::collection($requests));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(RequestsRequest $request, Authenticatable $user)
     {
 
@@ -100,9 +94,6 @@ class RequestController extends Controller
         return $this->jsonResponse(true, 201, 'Request document successfully');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show($id)
     {
         $request = $this->findDataOrFail(Request::class, $id);
@@ -114,9 +105,6 @@ class RequestController extends Controller
         return $this->jsonResponse(true, 200, 'Data retrieved successfully', new RequestResource($request));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(RequestsRequest $request, $id)
     {
 
@@ -192,22 +180,22 @@ class RequestController extends Controller
         return $this->jsonResponse(true, 201, "Requested Document {$status} successfully");
     }
 
-    public function archive($id)
+    public function archive($id, $status)
     {
+        $status = filter_var($status, FILTER_VALIDATE_BOOLEAN);
+
         $requestDetails = $this->findDataOrFail(Request::class, $id);
         if ($requestDetails instanceof \Illuminate\Http\JsonResponse) {
             return $requestDetails;
         }
 
-        $requestDetails->archive_status = true;
+        $requestDetails->archive_status = $status;
         $requestDetails->save();
 
-        return $this->jsonResponse(true, 200, 'Request archived successfully');
+        $message = $status ? 'archive' : 'restore';
+        return $this->jsonResponse(true, 200, "Request {$message} successfully");
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy($id)
     {
         $request = $this->findDataOrFail(Request::class, $id);
