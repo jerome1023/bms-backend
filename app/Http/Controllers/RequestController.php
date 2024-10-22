@@ -247,6 +247,7 @@ class RequestController extends Controller
     private function validateRequestDocument($request, $document)
     {
         $purpose = ['Work', 'School Requirement', 'Business', 'Others'];
+        $businessDocuments = ['Business Clearance (A)', 'Business Clearance (B)', 'Business Clearance (C)', 'Business Clearance (D)'];
 
         if (!in_array($request->purpose, $purpose)) {
             return $this->jsonResponse(false, 400, 'Invalid purpose');
@@ -258,15 +259,6 @@ class RequestController extends Controller
                 return $this->jsonResponse(false, 400, 'Validation error', null, ['document' => ["The document is not accepted for school requirements"]]);
             }
         } elseif ($request->purpose == 'Business') {
-            $validator = Validator::make($request->all(), [
-                'income' => 'required|integer'
-            ]);
-
-            if ($validator->fails()) {
-                return $this->jsonResponse(false, 400, 'Validation error', null, $validator->errors());
-            }
-
-            // Document and income validation for Business
             $income = $request->income;
             $businessClearances = [
                 'Business Clearance (A)' => [0, 50000],
@@ -275,6 +267,16 @@ class RequestController extends Controller
                 'Business Clearance (D)' => [500000, PHP_INT_MAX],
             ];
 
+            if(in_array($document->name, $businessDocuments)){
+                $validator = Validator::make($request->all(), [
+                    'income' => 'required|integer'
+                ]);
+    
+                if ($validator->fails()) {
+                    return $this->jsonResponse(false, 400, 'Validation error', null, $validator->errors());
+                }
+            }
+            
             // Check if the selected document matches the income range
             $correctDocument = null;
             foreach ($businessClearances as $clearanceName => [$minIncome, $maxIncome]) {
@@ -292,12 +294,8 @@ class RequestController extends Controller
                     ]);
                 }
             } 
-            // else {
-            //     return $this->jsonResponse(false, 400, 'Invalid business document selected');
-            // }
         }
         
-        $businessDocuments = ['Business Clearance (A)', 'Business Clearance (B)', 'Business Clearance (C)', 'Business Clearance (D)'];
         if(in_array($document->name, $businessDocuments) && $request->purpose != "Business" ){
             return $this->jsonResponse(false, 400, "Validation error", null, [
                 'purpose' => ["Business Clearance is for Business purpose only"]
