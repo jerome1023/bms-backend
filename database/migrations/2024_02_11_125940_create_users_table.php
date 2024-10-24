@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('password');
             $table->string('address')->nullable();
             $table->string('role_id');
+            $table->string('image')->nullable();
             $table->boolean('archive_status');
             $table->timestamps();
         });

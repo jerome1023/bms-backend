@@ -53,9 +53,9 @@ class UserController extends Controller
             'gender' => $request->gender,
             'email' => $request->email,
             'address' => $request->address,
-            'password' => $request->password ? Hash::make($request->password) : $user->password,
-            'archive_status' => $request->archive_status ?? false,
+            // 'password' => $request->password ? Hash::make($request->password) : $user->password,
+            // 'archive_status' => $request->archive_status ?? false,
         ]);
-        return $this->jsonResponse(true, 200, 'Official updated successfully');
+        return $this->jsonResponse(true, 200, 'Profile updated successfully');
     }
 }
