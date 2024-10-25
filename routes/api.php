@@ -45,6 +45,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::get('/list', 'index');
         Route::get('/{id}', 'view');
         Route::put('/update/{id}', 'update');
+        Route::put('/update-profile', 'update_profile');
     });
 
     Route::controller(SitioController::class)->prefix('/sitio')->group(function () {
