@@ -137,9 +137,9 @@ class UserController extends Controller
             'email' => $request->email,
             'address' => $request->address,
             'password' => $request->password ? Hash::make($request->password) : $user->password,
-            'image' => $imageName ? '/storage/profile/' . $imageName : null,
+            'image' =>  $imageName ? '/storage/profile/' . $imageName : ($base64Image === null ? null : $user->image),
             'archive_status' => $request->archive_status ?? false,
         ]);
-        return $this->jsonResponse(true, 200, 'Profile updated successfully');
+        return $this->jsonResponse(true, 200, 'Profile updated successfully', new UserResource($user));
     }
 }
