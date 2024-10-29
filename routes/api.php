@@ -4,6 +4,7 @@ use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BarangayDetailsController;
 use App\Http\Controllers\BlotterController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\OfficialController;
 use App\Http\Controllers\RequestController;
@@ -54,6 +55,10 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::post('/create', 'store');
         Route::put('/update/{id}', 'update');
         Route::delete('/delete/{id}', 'destroy');
+    });
+
+    Route::controller(DashboardController::class)->prefix('/dashboard')->group(function () {
+        Route::get('/list', 'index');
     });
 
     Route::controller(OfficialController::class)->prefix('/barangay-official')->group(function () {
