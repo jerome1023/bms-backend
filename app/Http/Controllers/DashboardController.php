@@ -9,6 +9,7 @@ use App\Models\Request as ModelsRequest;
 use App\Models\Resident;
 use App\Models\Transaction;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
@@ -21,7 +22,7 @@ class DashboardController extends Controller
             ->where('archive_status', false)->count();
         $blotter = Blotter::where('archive_status', false)->count();
 
-        $document_list = Document::orderBy('created_at')->get()->map(function ($document) {
+        $document_list = Document::orderBy('created_at', 'asc')->get()->map(function ($document) {
             return [
                 'code' => $document->id,
                 'name' => $document->name,
@@ -65,6 +66,30 @@ class DashboardController extends Controller
             'docs' => $docs,
             'revenue' => $revenue
         ];
+        return $this->jsonResponse(true, 200, 'Data retrieved successfully', $response);
+    }
+
+    public function search(Request $request)
+    {
+        $response = [];
+        [$currentYear, $currentMonth] = explode('-', $request->year_month);
+
+        if ($request->document) {
+            $docs = Transaction::where('document_id', $request->document)
+                ->whereYear('created_at', $currentYear)
+                ->whereMonth('created_at', $currentMonth)
+                ->where('archive_status', false)
+                ->selectRaw('SUM(price) as revenue, COUNT(*) as count')
+                ->first();
+
+            $response['docs_revenue'] = $docs->revenue ?? 0;
+            $response['docs_count'] = $docs->count ?? 0;
+        } else {
+            $response['revenue'] = Transaction::whereYear('created_at', $currentYear)
+                ->whereMonth('created_at', $currentMonth)
+                ->where('archive_status', false)
+                ->sum('price');
+        }
         return $this->jsonResponse(true, 200, 'Data retrieved successfully', $response);
     }
 }

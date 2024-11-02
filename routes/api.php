@@ -59,6 +59,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
     Route::controller(DashboardController::class)->prefix('/dashboard')->group(function () {
         Route::get('/list', 'index');
+        Route::post('/search', 'search');
     });
 
     Route::controller(OfficialController::class)->prefix('/barangay-official')->group(function () {
