@@ -15,46 +15,18 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        $now = Carbon::now();
+        $docs = [];
+
         $resident = Resident::where('archive_status', false)->count();
-        $pending = ModelsRequest::where('status', 'pending')
-            ->where('archive_status', false)->count();
-        $approved = ModelsRequest::where('status', 'approved')
-            ->where('archive_status', false)->count();
+        $pending = $this->countRequestsByStatus('pending');
+        $approved = $this->countRequestsByStatus('approved');
         $blotter = Blotter::where('archive_status', false)->count();
 
-        $document_list = Document::orderBy('created_at', 'asc')->get()->map(function ($document) {
-            return [
-                'code' => $document->id,
-                'name' => $document->name,
-            ];
-        });
+        $docs['list'] = $this->getDocumentList();
 
-        $currentMonth = Carbon::now()->month;
-        $currentYear = Carbon::now()->year;
-
-        $revenue = Transaction::whereYear('created_at', $currentYear)
-            ->whereMonth('created_at', $currentMonth)
-            ->where('archive_status', false)
-            ->sum('price');
-
-        $firstDocument = Document::orderBy('created_at', 'asc')->first();
-        $docs = (object) [
-            'revenue' => 0,
-            'count' => 0,
-        ];
-
-        if ($firstDocument) {
-            $docs->revenue = Transaction::where('document_id', $firstDocument->id)
-                ->whereYear('created_at', $currentYear)
-                ->whereMonth('created_at', $currentMonth)
-                ->where('archive_status', false)
-                ->sum('price'); // This gives you the total revenue
-
-            $docs->count = Transaction::where('document_id', $firstDocument->id)
-                ->whereYear('created_at', $currentYear)
-                ->whereMonth('created_at', $currentMonth)
-                ->where('archive_status', false)
-                ->count(); // This gives you the number of transactions
+        if ($firstDocument = Document::orderBy('created_at', 'asc')->first()) {
+            $docs = array_merge($docs, $this->document($firstDocument->id, $now->year, $now->month));
         }
 
         $response = [
@@ -62,9 +34,8 @@ class DashboardController extends Controller
             'pending' => $pending,
             'approved' => $approved,
             'blotter' => $blotter,
-            'document_list' => $document_list,
             'docs' => $docs,
-            'revenue' => $revenue
+            'total_revenue' => $this->revenue($now->year, $now->month)
         ];
         return $this->jsonResponse(true, 200, 'Data retrieved successfully', $response);
     }
@@ -75,21 +46,49 @@ class DashboardController extends Controller
         [$currentYear, $currentMonth] = explode('-', $request->year_month);
 
         if ($request->document) {
-            $docs = Transaction::where('document_id', $request->document)
-                ->whereYear('created_at', $currentYear)
-                ->whereMonth('created_at', $currentMonth)
-                ->where('archive_status', false)
-                ->selectRaw('SUM(price) as revenue, COUNT(*) as count')
-                ->first();
-
-            $response['docs_revenue'] = $docs->revenue ?? 0;
-            $response['docs_count'] = $docs->count ?? 0;
+            $response['docs'] = $this->document($request->document, $currentYear, $currentMonth);
         } else {
-            $response['revenue'] = Transaction::whereYear('created_at', $currentYear)
-                ->whereMonth('created_at', $currentMonth)
-                ->where('archive_status', false)
-                ->sum('price');
+            $response['revenue'] = $this->revenue($currentYear, $currentMonth);
         }
         return $this->jsonResponse(true, 200, 'Data retrieved successfully', $response);
+    }
+
+    private function countRequestsByStatus(string $status): int
+    {
+        return ModelsRequest::where('status', $status)
+            ->where('archive_status', false)->count();
+    }
+
+    private function getDocumentList(): array
+    {
+        return Document::orderBy('created_at', 'asc')->get()->map(function ($document) {
+            return [
+                'code' => $document->id,
+                'name' => $document->name,
+            ];
+        })->toArray();
+    }
+
+    private function document(string $docs_id, int $year, int $month): array
+    {
+        $docs = Transaction::where('document_id', $docs_id)
+            ->whereYear('created_at', $year)
+            ->whereMonth('created_at', $month)
+            ->where('archive_status', false)
+            ->selectRaw('SUM(price) as revenue, COUNT(*) as count')
+            ->first();
+
+        return [
+            'revenue' => $docs->revenue ?? 0,
+            'count' => $docs->count ?? 0,
+        ];
+    }
+
+    private function revenue(int $year, int $month): float
+    {
+        return Transaction::whereYear('created_at', $year)
+            ->whereMonth('created_at', $month)
+            ->where('archive_status', false)
+            ->sum('price') ?? 0.0;
     }
 }
