@@ -29,7 +29,6 @@ class AuthController extends Controller
             ], Response::HTTP_UNAUTHORIZED);
         }
 
-        // dd($user->id);
         return response()->json([
             'token' => $user->createToken('Web API')->plainTextToken,
             'id' => $user->id,
@@ -92,6 +91,6 @@ class AuthController extends Controller
     {
         $request->user()->currentAccessToken()->delete();
 
-        return response()->json(['status' => true, 'message' => 'Logged out successfully','status_code' => Response::HTTP_OK], Response::HTTP_OK);
+        return response()->json(['status' => true, 'message' => 'Logged out successfully', 'status_code' => Response::HTTP_OK], Response::HTTP_OK);
     }
 }

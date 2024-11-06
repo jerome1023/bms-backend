@@ -7,17 +7,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\TransactionRequest;
 use App\Http\Resources\TransactionResource;
 use App\Models\Document;
-use App\Models\User;
 use Illuminate\Contracts\Auth\Authenticatable;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
 class TransactionController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Authenticatable $user)
     {
         if ($user->role->name === 'Administrator') {
@@ -40,9 +34,6 @@ class TransactionController extends Controller
         return $this->jsonResponse(true, 200, 'Data retrieved successfully', TransactionResource::collection($transaction));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(TransactionRequest $request)
     {
         $document = $this->findDataOrFail(Document::class, $request->document);
@@ -74,9 +65,6 @@ class TransactionController extends Controller
         return $this->jsonResponse(true, 201, 'Transaction created successfully');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show($id)
     {
         $transaction = $this->findDataOrFail(Transaction::class, $id);
@@ -87,9 +75,6 @@ class TransactionController extends Controller
         return $this->jsonResponse(true, 201, 'Data retrieved successfully', new TransactionResource($transaction));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(TransactionRequest $request, $id)
     {
         $transaction = $this->findDataOrFail(Transaction::class, $id);
@@ -123,22 +108,22 @@ class TransactionController extends Controller
         return $this->jsonResponse(true, 201, 'Transaction updated successfully', $transaction);
     }
 
-    public function archive($id)
+    public function archive_status($id, $status)
     {
+        $status = filter_var($status, FILTER_VALIDATE_BOOLEAN);
+
         $transaction = $this->findDataOrFail(Transaction::class, $id);
         if ($transaction instanceof \Illuminate\Http\JsonResponse) {
             return $transaction;
         }
 
-        $transaction->archive_status = true;
+        $transaction->archive_status = $status;
         $transaction->save();
 
-        return $this->jsonResponse(true, 200, 'Transaction archived successfully');
+        $message = $status ? 'archive' : 'restore';
+        return $this->jsonResponse(true, 200, "Transaction {$message} successfully");
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy($id)
     {
         $transaction = $this->findDataOrFail(Transaction::class, $id);
@@ -164,16 +149,6 @@ class TransactionController extends Controller
                 return $this->jsonResponse(false, 400, 'The document is not accepted for school requirements');
             }
         }
-
-        // if ($request->purpose == 'Business') {
-        //     $validator = Validator::make($request->all(), [
-        //         'price' => 'required|integer'
-        //     ]);
-
-        //     if ($validator->fails()) {
-        //         return $this->jsonResponse(false, 400, 'Validation error', null, $validator->errors());
-        //     }
-        // }
 
         return null;
     }

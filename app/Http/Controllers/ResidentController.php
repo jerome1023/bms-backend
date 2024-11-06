@@ -7,8 +7,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ResidentRequest;
 use App\Http\Resources\ResidentResource;
 use App\Models\Sitio;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
 class ResidentController extends Controller
@@ -109,17 +107,20 @@ class ResidentController extends Controller
         return $this->jsonResponse(true, 200, 'Resident updated successfully', $resident);
     }
 
-    public function archive($id)
+    public function archive_status($id, $status)
     {
+        $status = filter_var($status, FILTER_VALIDATE_BOOLEAN);
+
         $resident = $this->findDataOrFail(Resident::class, $id);
         if ($resident instanceof \Illuminate\Http\JsonResponse) {
             return $resident;
         }
 
-        $resident->archive_status = true;
+        $resident->archive_status = $status;
         $resident->save();
 
-        return $this->jsonResponse(true, 200, 'Resident archived successfully');
+        $message = $status ? 'archive' : 'restore';
+        return $this->jsonResponse(true, 200, "Resident {$message} successfully");
     }
 
     public function destroy($id)

@@ -2,14 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Request extends Model
 {
-    use HasFactory;
+    use HasFactory, HasUuids;
 
-    protected $primaryKey = 'id';
     public $incrementing = false;
 
     protected $fillable = [
@@ -26,6 +26,10 @@ class Request extends Model
         'reason',
         'archive_status',
         'date',
+    ];
+
+    protected $casts = [
+        'date' => 'datetime',
     ];
 
     public function user()

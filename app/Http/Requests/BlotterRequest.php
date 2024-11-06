@@ -2,10 +2,21 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Foundation\Http\FormRequest;
 
 class BlotterRequest extends FormRequest
 {
+    protected function failedValidation(Validator $validator)
+    {
+        throw new HttpResponseException(response()->json([
+            'status' => false,
+            'status_code' => 400,
+            'message' => 'Validation error',
+            'errors' => $validator->errors()->toArray()
+        ], 400));
+    }
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -30,7 +41,7 @@ class BlotterRequest extends FormRequest
             'complainee_age' => ['required', 'integer'],
             'complainee_address' => ['required', 'string', 'max:255'],
             'complainee_contact_number' => ['required', 'string', 'max:255'],
-            'date' => ['required', 'date','date_format:Y-m-d', 'before_or_equal:today'],
+            'date' => ['required', 'date', 'date_format:Y-m-d', 'before_or_equal:today'],
             'complain' => ['required', 'string', 'max:255'],
             'agreement' => ['nullable', 'string', 'max:255'],
             'namagitan' => ['nullable',  'string', 'max:255'],

@@ -108,17 +108,20 @@ class BlotterController extends Controller
         return $this->jsonResponse(true, 200, 'Blotter solved successfully', $blotter);
     }
 
-    public function archive($id)
+    public function archive_status($id, $status)
     {
+        $status = filter_var($status, FILTER_VALIDATE_BOOLEAN);
+
         $blotter = $this->findDataOrFail(Blotter::class, $id);
         if ($blotter instanceof \Illuminate\Http\JsonResponse) {
             return $blotter;
         }
 
-        $blotter->archive_status = true;
+        $blotter->archive_status = $status;
         $blotter->save();
 
-        return $this->jsonResponse(true, 200, 'Blotter archived successfully');
+        $message = $status ? 'archive' : 'restore';
+        return $this->jsonResponse(true, 200, "Blotter {$message} successfully");
     }
 
     public function destroy($id)

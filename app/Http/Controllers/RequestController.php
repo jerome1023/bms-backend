@@ -8,6 +8,7 @@ use App\Http\Requests\Request as RequestsRequest;
 use App\Http\Resources\RequestResource;
 use App\Models\Document;
 use App\Models\Sitio;
+use App\Models\Transaction;
 use Carbon\Carbon;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\Request as HttpRequest;
@@ -17,9 +18,6 @@ use Illuminate\Support\Str;
 
 class RequestController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index($status, Authenticatable $user)
     {
         $allowedStatus = ['pending', 'approved', 'disapproved', 'completed'];
@@ -53,9 +51,6 @@ class RequestController extends Controller
         return $this->jsonResponse(true, 200, 'Data retrieved successfully', RequestResource::collection($requests));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(RequestsRequest $request, Authenticatable $user)
     {
 
@@ -100,9 +95,6 @@ class RequestController extends Controller
         return $this->jsonResponse(true, 201, 'Request document successfully');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show($id)
     {
         $request = $this->findDataOrFail(Request::class, $id);
@@ -114,9 +106,6 @@ class RequestController extends Controller
         return $this->jsonResponse(true, 200, 'Data retrieved successfully', new RequestResource($request));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(RequestsRequest $request, $id)
     {
 
@@ -173,12 +162,12 @@ class RequestController extends Controller
         if ($requestDocument instanceof \Illuminate\Http\JsonResponse) {
             return $requestDocument;
         }
-        
-        if($status === 'disapproved'){
+
+        if ($status === 'disapproved') {
             $validator = Validator::make($request->all(), [
                 'reason' => 'required|string|max:255',
             ]);
-    
+
             if ($validator->fails()) {
                 return $this->jsonResponse(false, 400, 'Validation error', null, $validator->errors());
             }
@@ -189,25 +178,58 @@ class RequestController extends Controller
         $requestDocument->date = Carbon::now();
         $requestDocument->save();
 
-        return $this->jsonResponse(true, 201, "Requested Document {$status} successfully");
+        return $this->jsonResponse(true, 201, "Requested document {$status} successfully");
     }
 
-    public function archive($id)
+    public function complete($id)
     {
+        $requestDocument = $this->findDataOrFail(Request::class, $id);
+        if ($requestDocument instanceof \Illuminate\Http\JsonResponse) {
+            return $requestDocument;
+        }
+
+        $document = $this->findDataOrFail(Document::class, $requestDocument->document_id);
+        if ($document instanceof \Illuminate\Http\JsonResponse) {
+            return $document;
+        }
+
+        $price = 0;
+        if ($requestDocument->purpose != 'School Requirement') {
+            $price = $document->price;
+        }
+
+        Transaction::create([
+            'id' => Str::uuid(),
+            'fullname' => $requestDocument->fullname,
+            'user_id' => $requestDocument->user_id,
+            'document_id' => $document->id,
+            'purpose' => $requestDocument->purpose,
+            'price' => $price,
+            'archive_status' => $request->archive_status ?? false
+        ]);
+
+        $requestDocument->status = "completed";
+        $requestDocument->save();
+
+        return $this->jsonResponse(true, 201, "Requested document complete successfully");
+    }
+
+    public function archive_status($id, $status)
+    {
+        $status = filter_var($status, FILTER_VALIDATE_BOOLEAN);
+
         $requestDetails = $this->findDataOrFail(Request::class, $id);
         if ($requestDetails instanceof \Illuminate\Http\JsonResponse) {
             return $requestDetails;
         }
 
-        $requestDetails->archive_status = true;
+        $requestDetails->archive_status = $status;
         $requestDetails->save();
 
-        return $this->jsonResponse(true, 200, 'Request archived successfully');
+        $message = $status ? 'archive' : 'restore';
+        return $this->jsonResponse(true, 200, "Request {$message} successfully");
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy($id)
     {
         $request = $this->findDataOrFail(Request::class, $id);
@@ -224,6 +246,7 @@ class RequestController extends Controller
     private function validateRequestDocument($request, $document)
     {
         $purpose = ['Work', 'School Requirement', 'Business', 'Others'];
+        $businessDocuments = ['Business Clearance (A)', 'Business Clearance (B)', 'Business Clearance (C)', 'Business Clearance (D)'];
 
         if (!in_array($request->purpose, $purpose)) {
             return $this->jsonResponse(false, 400, 'Invalid purpose');
@@ -232,18 +255,50 @@ class RequestController extends Controller
         if ($request->purpose == 'School Requirement') {
             $acceptedDocuments = ['Barangay Clearance', 'Barangay Residency', 'Barangay Certificate'];
             if (!in_array($document->name, $acceptedDocuments)) {
-                return $this->jsonResponse(false, 400, 'The document is not accepted for school requirements');
+                return $this->jsonResponse(false, 400, 'Validation error', null, ['document' => ["The document is not accepted for school requirements"]]);
             }
+        } elseif ($request->purpose == 'Business') {
+            $income = $request->income;
+            $businessClearances = [
+                'Business Clearance (A)' => [0, 50000],
+                'Business Clearance (B)' => [50000, 100000],
+                'Business Clearance (C)' => [100000, 500000],
+                'Business Clearance (D)' => [500000, PHP_INT_MAX],
+            ];
+
+            if(in_array($document->name, $businessDocuments)){
+                $validator = Validator::make($request->all(), [
+                    'income' => 'required|integer'
+                ]);
+    
+                if ($validator->fails()) {
+                    return $this->jsonResponse(false, 400, 'Validation error', null, $validator->errors());
+                }
+            }
+            
+            // Check if the selected document matches the income range
+            $correctDocument = null;
+            foreach ($businessClearances as $clearanceName => [$minIncome, $maxIncome]) {
+                if ($income >= $minIncome && $income <= $maxIncome) {
+                    $correctDocument = $clearanceName;
+                    break;
+                }
+            }
+            // Check if the selected document matches the income range
+            if (array_key_exists($document->name, $businessClearances)) {
+                [$minIncome, $maxIncome] = $businessClearances[$document->name];
+                if ($income < $minIncome || $income > $maxIncome) {
+                    return $this->jsonResponse(false, 400, "Validation error", null, [
+                        'document' => ["The selected document does not match the income range. The correct document for your income is: $correctDocument"]
+                    ]);
+                }
+            } 
         }
-
-        if ($request->purpose == 'Business') {
-            $validator = Validator::make($request->all(), [
-                'income' => 'required|integer'
+        
+        if(in_array($document->name, $businessDocuments) && $request->purpose != "Business" ){
+            return $this->jsonResponse(false, 400, "Validation error", null, [
+                'purpose' => ["Business Clearance is for Business purpose only"]
             ]);
-
-            if ($validator->fails()) {
-                return $this->jsonResponse(false, 400, 'Validation error', null, $validator->errors());
-            }
         }
 
         return null;

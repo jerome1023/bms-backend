@@ -10,10 +10,6 @@ class Official extends Model
 {
     use HasFactory, HasUuids;
 
-    // protected $table = 'official';
-    // protected $keyType = 'string';
-    // public $incrementing = false;
-
     protected $fillable = [
         'id',
         'firstname',
@@ -22,7 +18,6 @@ class Official extends Model
         'gender',
         'position',
         'birthdate',
-        // 'sitio_id',
         'start_term',
         'end_term',
         'archive_status'

@@ -4,6 +4,7 @@ use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BarangayDetailsController;
 use App\Http\Controllers\BlotterController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\OfficialController;
 use App\Http\Controllers\RequestController;
@@ -24,10 +25,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
-
 Route::controller(AuthController::class)->group(function () {
     Route::post('/register', 'register');
     Route::post('/login', 'login');
@@ -45,6 +42,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::get('/list', 'index');
         Route::get('/{id}', 'view');
         Route::put('/update/{id}', 'update');
+        Route::put('/update-profile', 'update_profile');
     });
 
     Route::controller(SitioController::class)->prefix('/sitio')->group(function () {
@@ -55,13 +53,18 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::delete('/delete/{id}', 'destroy');
     });
 
+    Route::controller(DashboardController::class)->prefix('/dashboard')->group(function () {
+        Route::get('/list', 'index');
+        Route::post('/search', 'search');
+    });
+
     Route::controller(OfficialController::class)->prefix('/barangay-official')->group(function () {
         Route::get('/list', 'index');
         Route::get('/archive_list', 'archive_list');
         Route::get('/view/{id}', 'show');
         Route::post('/create', 'store');
         Route::put('/update/{id}', 'update');
-        Route::put('/archive/{id}', 'archive');
+        Route::put('/archive_status/{id}/{status}', 'archive_status');
         Route::delete('/delete/{id}', 'destroy');
     });
 
@@ -71,7 +74,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::get('/view/{id}', 'show');
         Route::post('/create', 'store');
         Route::put('/update/{id}', 'update');
-        Route::put('/archive/{id}', 'archive');
+        Route::put('/archive_status/{id}/{status}', 'archive_status');
         Route::delete('/delete/{id}', 'destroy');
     });
 
@@ -90,7 +93,8 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::post('/create', 'store');
         Route::put('/update/{id}', 'update');
         Route::put('/update-status/{id}/{status}', 'updateStatus');
-        Route::put('/archive/{id}', 'archive');
+        Route::put('/complete/{id}', 'complete');
+        Route::put('/archive_status/{id}/{status}', 'archive_status');
         Route::delete('/delete/{id}', 'destroy');
     });
 
@@ -100,7 +104,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::get('/view/{id}', 'show');
         Route::post('/create', 'store');
         Route::put('/update/{id}', 'update');
-        Route::put('/archive/{id}', 'archive');
+        Route::put('/archive_status/{id}/{status}', 'archive_status');
         Route::delete('/delete/{id}', 'destroy');
     });
 
@@ -110,7 +114,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::get('/view/{id}', 'show');
         Route::post('/create', 'store');
         Route::put('/update/{id}', 'update');
-        Route::put('/archive/{id}', 'archive');
+        Route::put('/archive_status/{id}/{status}', 'archive_status');
         Route::delete('/delete/{id}', 'destroy');
     });
 
@@ -121,7 +125,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::post('/create', 'store');
         Route::put('/update/{id}', 'update');
         Route::put('/solve/{id}', 'solve');
-        Route::put('/archive/{id}', 'archive');
+        Route::put('/archive_status/{id}/{status}', 'archive_status');
         Route::delete('/delete/{id}', 'destroy');
     });
 });

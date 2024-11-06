@@ -6,9 +6,6 @@ use App\Models\Official;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\OfficialRequest;
 use App\Http\Resources\OfficialResource;
-use App\Models\Sitio;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
 class OfficialController extends Controller
@@ -31,12 +28,6 @@ class OfficialController extends Controller
             return $this->jsonResponse(false, 409, 'Official with the same name already exists');
         }
 
-        // $sitio = $this->findDataOrFail(Sitio::class, $request->sitio_id, 'Sitio Not Found');
-
-        // if ($sitio instanceof \Illuminate\Http\JsonResponse) {
-        //     return $sitio;
-        // }
-
         Official::create([
             'id' => Str::uuid(),
             'firstname' => $request->firstname,
@@ -45,7 +36,6 @@ class OfficialController extends Controller
             'gender' => $request->gender,
             'position' => $request->position,
             'birthdate' => $request->birthdate,
-            // 'sitio_id' => $sitio->id,
             'start_term' => $request->start_term,
             'end_term' => $request->end_term,
             'archive_status' => false
@@ -75,12 +65,6 @@ class OfficialController extends Controller
             return $this->jsonResponse(false, 409, 'Official with the same name already exists');
         }
 
-        // $sitio = $this->findDataOrFail(Sitio::class, $request->sitio_id, 'Sitio Not Found');
-
-        // if ($sitio instanceof \Illuminate\Http\JsonResponse) {
-        //     return $sitio;
-        // }
-
         $official->update([
             'firstname' => $request->firstname,
             'middlename' => $request->middlename,
@@ -88,7 +72,6 @@ class OfficialController extends Controller
             'gender' => $request->gender,
             'position' => $request->position,
             'birthdate' => $request->birthdate,
-            // 'sitio_id' => $sitio->id,
             'start_term' => $request->start_term,
             'end_term' => $request->end_term,
             'archive_status' => $request->archive_status ?? false,
@@ -96,18 +79,20 @@ class OfficialController extends Controller
         return $this->jsonResponse(true, 200, 'Official updated successfully', $official);
     }
 
-    public function archive($id)
+    public function archive_status($id, $status)
     {
-        $official = $this->findDataOrFail(Official::class, $id);
+        $status = filter_var($status, FILTER_VALIDATE_BOOLEAN);
 
+        $official = $this->findDataOrFail(Official::class, $id);
         if ($official instanceof \Illuminate\Http\JsonResponse) {
             return $official;
         }
 
-        $official->archive_status = true;
+        $official->archive_status = $status;
         $official->save();
 
-        return $this->jsonResponse(true, 200, 'Official archived successfully');
+        $message = $status ? 'archive' : 'restore';
+        return $this->jsonResponse(true, 200, "Official {$message} successfully");
     }
 
     public function destroy($id)

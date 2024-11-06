@@ -28,8 +28,7 @@ class RequestResource extends JsonResource
             'price' => $this->price,
             'status' => $this->status,
             'reason' => $this->reason,
-            'date' => $this->date,
-            // 'created_at' => $this->created_at
+            'date' => $this->date ? $this->date->format('Y-m-d g:i a') : null,
         ];
     }
 }
