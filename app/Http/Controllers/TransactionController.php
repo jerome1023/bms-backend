@@ -8,7 +8,6 @@ use App\Http\Requests\TransactionRequest;
 use App\Http\Resources\TransactionResource;
 use App\Models\Document;
 use Illuminate\Contracts\Auth\Authenticatable;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
 class TransactionController extends Controller
@@ -125,7 +124,6 @@ class TransactionController extends Controller
         return $this->jsonResponse(true, 200, "Transaction {$message} successfully");
     }
 
-
     public function destroy($id)
     {
         $transaction = $this->findDataOrFail(Transaction::class, $id);
@@ -151,16 +149,6 @@ class TransactionController extends Controller
                 return $this->jsonResponse(false, 400, 'The document is not accepted for school requirements');
             }
         }
-
-        // if ($request->purpose == 'Business') {
-        //     $validator = Validator::make($request->all(), [
-        //         'price' => 'required|integer'
-        //     ]);
-
-        //     if ($validator->fails()) {
-        //         return $this->jsonResponse(false, 400, 'Validation error', null, $validator->errors());
-        //     }
-        // }
 
         return null;
     }

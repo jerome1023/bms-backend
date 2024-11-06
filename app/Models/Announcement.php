@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 class Announcement extends Model
 {
     use HasFactory, HasUuids;
-    
+
     protected $fillable = [
         'id',
         'user_id',
@@ -21,7 +21,7 @@ class Announcement extends Model
         'image',
         'archive_status'
     ];
-    
+
     protected $casts = [
         'when' => 'datetime',
     ];

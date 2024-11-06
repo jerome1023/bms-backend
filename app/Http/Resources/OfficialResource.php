@@ -23,7 +23,6 @@ class OfficialResource extends JsonResource
             'gender' => $this->gender,
             'position' => $this->position,
             'birthdate' => $this->birthdate,
-            // 'sitio' => new SitioResource($this->sitio),
             'start_term' => $this->start_term,
             'end_term' => $this->end_term,
             'archive_status' => $this->archive_status,

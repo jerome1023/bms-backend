@@ -6,9 +6,6 @@ use App\Models\Official;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\OfficialRequest;
 use App\Http\Resources\OfficialResource;
-use App\Models\Sitio;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
 class OfficialController extends Controller
@@ -85,7 +82,7 @@ class OfficialController extends Controller
     public function archive_status($id, $status)
     {
         $status = filter_var($status, FILTER_VALIDATE_BOOLEAN);
-        
+
         $official = $this->findDataOrFail(Official::class, $id);
         if ($official instanceof \Illuminate\Http\JsonResponse) {
             return $official;

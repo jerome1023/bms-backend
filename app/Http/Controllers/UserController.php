@@ -16,7 +16,6 @@ use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
-
     public function index()
     {
         $role = Role::where('name', 'User')
@@ -64,7 +63,7 @@ class UserController extends Controller
     public function update_profile(Request $request)
     {
         /** @var User $user */
-        $user = auth()->user(); // Get the authenticated user
+        $user = auth()->user();
 
         if (!$user) {
             return response()->json(['message' => 'Unauthorized'], 401);
@@ -106,7 +105,6 @@ class UserController extends Controller
                 }
             }
         } elseif ($base64Image && $base64Image != $user->image) {
-            // Handle image upload/change
             if (preg_match('/^data:image\/(\w+);base64,/', $base64Image, $type)) {
                 $imageType = strtolower($type[1]);
 
@@ -133,7 +131,6 @@ class UserController extends Controller
         $user->update([
             'firstname' => $request->firstname,
             'lastname' => $request->lastname,
-            // 'gender' => $request->gender,
             'email' => $request->email,
             'address' => $request->address,
             'password' => $request->password ? Hash::make($request->password) : $user->password,

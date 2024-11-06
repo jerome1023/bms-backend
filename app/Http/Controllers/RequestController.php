@@ -15,7 +15,6 @@ use Illuminate\Http\Request as HttpRequest;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
-use Illuminate\Validation\ValidationException;
 
 class RequestController extends Controller
 {

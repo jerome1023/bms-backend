@@ -33,11 +33,11 @@ class TransactionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'fullname' => ['required', 'string', 'max:255' ],
-            'user_id' => ['nullable', 'string', 'max:255' ],
-            'document' => ['required', 'string', 'max:255' ],
-            'purpose' => ['required', 'string', 'max:255' ],
-            'archive_status' => ['nullable', 'boolean', 'max:255' ]
+            'fullname' => ['required', 'string', 'max:255'],
+            'user_id' => ['nullable', 'string', 'max:255'],
+            'document' => ['required', 'string', 'max:255'],
+            'purpose' => ['required', 'string', 'max:255'],
+            'archive_status' => ['nullable', 'boolean', 'max:255']
         ];
     }
 }

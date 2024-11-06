@@ -26,14 +26,6 @@ class DocumentController extends Controller
         return $this->jsonResponse(true, 201, 'Document created successfully');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Document $document)
-    {
-        //
-    }
-
     public function update(DocumentRequest $request, $id)
     {
         $document = $this->findDataOrFail(Document::class, $id);
