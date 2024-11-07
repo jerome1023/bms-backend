@@ -18,7 +18,6 @@ RUN apt-get update && apt-get install -y \
     unzip \
     libpq-dev \
     libzip-dev \
-    nginx \
     && apt-get clean && rm -rf /var/lib/apt/lists/* 
 
 # Install PHP extensions
@@ -31,16 +30,23 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Copy existing application directory contents to the working directory
 COPY . /var/www
 
-# Install dependencies with Composer (production)
+# Install dependencies with Composer
+#production
 RUN composer install --no-dev --optimize-autoloader
 
-# Copy Nginx configuration
-COPY nginx.conf /etc/nginx/nginx.conf
+# Copy entrypoint script
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 
-# Ensure permissions for Laravel
+# Make the entrypoint script executable
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+# Set the entrypoint to run migrations and start PHP-FPM
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+
+# Set file permissions for Laravel
 RUN chown -R www-data:www-data /var/www \
     && chmod -R 755 /var/www/storage \
     && chmod -R 755 /var/www/bootstrap/cache
 
-# Start both Nginx and PHP-FPM
-CMD service nginx start && php-fpm
+# Expose port 9000 for PHP-FPM
+EXPOSE 9000
