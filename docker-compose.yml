@@ -14,8 +14,8 @@ services:
 
     networks:
       - laravel
-    expose:
-    - "9000"  # Expose port 9000 internally for Nginx
+    # expose:
+    # - "9000"  # Expose port 9000 internally for Nginx
     # depends_on:
     #   postgres:
     #     condition: service_healthy
@@ -29,7 +29,9 @@ services:
       # - APP_URL=${APP_URL}
       # - APP_ENV=${APP_ENV}
       # - APP_KEY=${APP_KEY}
-    entrypoint: ["/usr/local/bin/entrypoint.sh"]
+    # entrypoint: ["/usr/local/bin/entrypoint.sh"]
+    entrypoint: ["php-fpm"]
+
 
   nginx:
     image: nginx:latest
