@@ -1,52 +1,29 @@
-# Use official PHP image as the base
+# Use PHP 8.2
 FROM php:8.2-fpm
 
-# Set working directory
-WORKDIR /var/www
-
-# Install system dependencies
+# Install system dependencies and PostgreSQL PHP extensions
 RUN apt-get update && apt-get install -y \
-    build-essential \
+    libfreetype-dev \
+    libjpeg62-turbo-dev \
     libpng-dev \
-    libjpeg-dev \
-    libfreetype6-dev \
-    libonig-dev \
-    libxml2-dev \
-    zip \
-    curl \
-    git \
+    zlib1g-dev \
+    libzip-dev \
     unzip \
     libpq-dev \
-    libzip-dev \
-    && apt-get clean && rm -rf /var/lib/apt/lists/* 
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install -j$(nproc) gd zip pdo_pgsql pgsql
 
-# Install PHP extensions
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo pdo_pgsql pgsql mbstring exif pcntl bcmath gd zip
+# Set the working directory
+WORKDIR /var/www/app
+COPY . .
+
+# Set up permissions
+RUN chown -R www-data:www-data /var/www/app \
+    && chmod -R 775 /var/www/app/storage
 
 # Install Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
-# Copy existing application directory contents to the working directory
-COPY . /var/www
-
-# Install dependencies with Composer
-#production
+COPY --from=composer:2.6.5 /usr/bin/composer /usr/local/bin/composer
 RUN composer install --no-dev --optimize-autoloader
 
-# Copy entrypoint script
-COPY entrypoint.sh /usr/local/bin/entrypoint.sh
-
-# Make the entrypoint script executable
-RUN chmod +x /usr/local/bin/entrypoint.sh
-
-# Set the entrypoint to run migrations and start PHP-FPM
-ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
-
-# Set file permissions for Laravel
-RUN chown -R www-data:www-data /var/www \
-    && chmod -R 755 /var/www/storage \
-    && chmod -R 755 /var/www/bootstrap/cache
-
-# Expose port 9000 for PHP-FPM
-EXPOSE 9000
+# Command for PHP-FPM to run in Railway
+CMD ["php-fpm"]
