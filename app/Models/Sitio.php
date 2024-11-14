@@ -10,8 +10,7 @@ class Sitio extends Model
 {
     use HasFactory, HasUuids;
 
-    public $incrementing = false;
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'id',

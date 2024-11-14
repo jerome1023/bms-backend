@@ -14,9 +14,12 @@ class SitioController extends Controller
     public function index(Request $request)
     {
         if ($request->has('name')) {
-            $sitios = Sitio::where('name', $request->name)->get();
+            $sitios = Sitio::where('name', $request->name)
+                ->orderBy('created_at')
+                ->get();
         } else {
-            $sitios = Sitio::all();
+            $sitios = Sitio::orderBy('created_at')
+                ->get();
         }
 
         return $this->jsonResponse(true, 200, 'Data retrieved successfully', SitioResource::collection($sitios));

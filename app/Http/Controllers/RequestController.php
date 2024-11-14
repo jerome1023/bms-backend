@@ -27,7 +27,8 @@ class RequestController extends Controller
         }
 
         $query = Request::where('status', $status)
-            ->where('archive_status', false);
+            ->where('archive_status', false)
+            ->orderBy('created_at');
 
         if ($user->role->name !== "Administrator") {
             $query->where('user_id', $user->id);

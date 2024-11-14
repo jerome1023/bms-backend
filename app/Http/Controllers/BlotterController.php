@@ -14,7 +14,9 @@ class BlotterController extends Controller
 {
     public function index()
     {
-        $blotters = Blotter::where('archive_status', false)->get();
+        $blotters = Blotter::where('archive_status', false)
+            ->orderBy('created_at')
+            ->get();
         return $this->jsonResponse(true, 200, 'Data retrieved successfully', BlotterResource::collection($blotters));
     }
 

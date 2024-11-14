@@ -13,7 +13,9 @@ class AnnouncementController extends Controller
 {
     public function index()
     {
-        $announcement = Announcement::where('archive_status', false)->get();
+        $announcement = Announcement::where('archive_status', false)
+            ->orderBy('when', 'ASC')
+            ->get();
         return $this->jsonResponse(true, 200, 'Data retrieved successfully', AnnouncementResource::collection($announcement));
     }
 

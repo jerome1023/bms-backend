@@ -14,7 +14,7 @@ class ResidentController extends Controller
 {
     public function index()
     {
-        $resident = Resident::where('archive_status', false)->get();
+        $resident = Resident::where('archive_status', false)->orderBy('lastname', 'ASC')->get();
         return $this->jsonResponse(true, 200, 'Data retrieved successfully', ResidentResource::collection($resident));
     }
 
