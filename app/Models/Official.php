@@ -23,6 +23,11 @@ class Official extends Model
         'archive_status'
     ];
 
+    public function getFullNameAttribute()
+    {
+        return "{$this->firstname} {$this->middlename} {$this->lastname}";
+    }
+
     public function blotters()
     {
         return $this->hasMany(Blotter::class, 'namagitan');
