@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\FullnameRegex;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Foundation\Http\FormRequest;
@@ -33,14 +34,14 @@ class BlotterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'complainant' => ['required', 'string', 'max:255'],
-            'complainant_age' => ['required', 'integer'],
+            'complainant' => ['required', new FullnameRegex, 'max:255'],
+            'complainant_age' => ['required', 'numeric'],
             'complainant_address' => ['required', 'string', 'max:255'],
-            'complainant_contact_number' => ['required', 'string', 'max:255'],
-            'complainee' => ['required', 'string', 'max:255'],
-            'complainee_age' => ['required', 'integer'],
+            'complainant_contact_number' => ['required', 'regex:/^09\d{2}-\d{3}-\d{4}$/'],
+            'complainee' => ['required', new FullnameRegex, 'max:255'],
+            'complainee_age' => ['required', 'numeric'],
             'complainee_address' => ['required', 'string', 'max:255'],
-            'complainee_contact_number' => ['required', 'string', 'max:255'],
+            'complainee_contact_number' => ['required', 'regex:/^09\d{2}-\d{3}-\d{4}$/'],
             'date' => ['required', 'date', 'date_format:Y-m-d', 'before_or_equal:today'],
             'complain' => ['required', 'string', 'max:255'],
             'agreement' => ['nullable', 'string', 'max:255'],

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\SingleNameRegex;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Foundation\Http\FormRequest;
@@ -34,8 +35,8 @@ class UserRequest extends FormRequest
     {
         $userId = $this->route('id') ?? $this->input('id');
         return [
-            'firstname' => 'required|string',
-            'lastname' => 'required|string',
+            'firstname' => ['required', new SingleNameRegex, 'max:255'],
+            'lastname' => ['required', new SingleNameRegex, 'max:255'],
             'address' => 'required|string',
             'email' => 'required|email|unique:users,email,' . $userId,
             'password' => 'nullable|min:6|same:confirm_password',

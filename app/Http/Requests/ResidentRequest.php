@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\SingleNameRegex;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Foundation\Http\FormRequest;
@@ -33,9 +34,9 @@ class ResidentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'firstname' => 'required|string|max:255',
-            'middlename' => 'required|string|max:255',
-            'lastname' => 'required|string|max:255',
+            'firstname' => ['required', new SingleNameRegex, 'max:255'],
+            'middlename' => ['required', new SingleNameRegex, 'max:255'],
+            'lastname' => ['required', new SingleNameRegex, 'max:255'],
             'gender' => 'required|string|max:255',
             'birthdate' => 'required|date|before:today',
             'birthplace' => 'required|string|max:255',
@@ -45,9 +46,16 @@ class ResidentRequest extends FormRequest
             'sitio' => 'required|string|max:255',
             'house_number' => 'required|string|max:255',
             'occupation' => 'required|string|max:255',
-            'nationality' => 'required|string|max:255',
+            'nationality' => 'required|regex:/^[a-zA-Z\s\-]+$/|max:255',
             'voter_status' => 'required|string|max:255',
             'archive_status' => 'nullable|boolean'
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'nationality.regex' => 'The nationality may only contain letters, spaces or hyphens',
         ];
     }
 }

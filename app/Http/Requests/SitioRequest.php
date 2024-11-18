@@ -36,10 +36,17 @@ class SitioRequest extends FormRequest
         return [
             'name' => [
                 'required',
-                'string',
+                'regex:/^[a-zA-Z0-9\s\-]+$/',
                 'max:255',
                 Rule::unique('sitios')->ignore($this->id),
             ],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'name.regex' => 'The sitio name may only contain letters, numbers, hyphens or spaces',
         ];
     }
 }
