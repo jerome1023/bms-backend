@@ -45,11 +45,7 @@
         ],
         "post-create-project-cmd": [
             "@php artisan key:generate --ansi"
-        ],
-        "post-deploy": [
-        "php artisan migrate --force",
-        "php artisan db:seed --force"
-    ]
+        ]
     },
     "extra": {
         "laravel": {
