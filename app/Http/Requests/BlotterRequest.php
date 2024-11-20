@@ -46,7 +46,7 @@ class BlotterRequest extends FormRequest
             'complain' => ['required', 'string', 'max:255'],
             'agreement' => ['nullable', 'string', 'max:255'],
             'namagitan' => ['nullable',  'string', 'max:255'],
-            'witness' => ['nullable', 'string', 'max:255'],
+            'witness' => ['nullable', new FullnameRegex, 'max:255'],
             'status' => ['nullable', 'string', 'max:255'],
             'archive_status' => ['nullable', 'boolean']
         ];

@@ -36,7 +36,7 @@ class SitioRequest extends FormRequest
         return [
             'name' => [
                 'required',
-                'regex:/^[a-zA-Z0-9\s\-]+$/',
+                'regex:/^[a-zA-Z0-9\s\Ñ\ñ\-]+$/',
                 'max:255',
                 Rule::unique('sitios')->ignore($this->id),
             ],

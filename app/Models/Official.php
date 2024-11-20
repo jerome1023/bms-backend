@@ -25,7 +25,8 @@ class Official extends Model
 
     public function getFullNameAttribute()
     {
-        return "{$this->firstname} {$this->middlename} {$this->lastname}";
+        $prefix = in_array($this->position, ['Kalihim', 'Ingat Yaman']) ? null : 'Hon. ';
+        return "{$prefix}{$this->firstname} {$this->middlename} {$this->lastname}";
     }
 
     public function blotters()

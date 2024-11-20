@@ -138,6 +138,7 @@ class TransactionController extends Controller
     private function validateRequestDocument($request, $document)
     {
         $purpose = ['Work', 'School Requirement', 'Business', 'Others'];
+        $businessDocuments = ['Business Clearance (A)', 'Business Clearance (B)', 'Business Clearance (C)', 'Business Clearance (D)'];
 
         if (!in_array($request->purpose, $purpose)) {
             return $this->jsonResponse(false, 400, 'Invalid purpose');
@@ -146,8 +147,22 @@ class TransactionController extends Controller
         if ($request->purpose == 'School Requirement') {
             $acceptedDocuments = ['Barangay Clearance', 'Barangay Residency', 'Barangay Certificate'];
             if (!in_array($document->name, $acceptedDocuments)) {
-                return $this->jsonResponse(false, 400, 'The document is not accepted for school requirements');
+                return $this->jsonResponse(
+                    false,
+                    400,
+                    "Validation error",
+                    null,
+                    [
+                        'document' => 'The document is not accepted for school requirements'
+                    ]
+                );
             }
+        }
+
+        if (in_array($document->name, $businessDocuments) && $request->purpose != "Business") {
+            return $this->jsonResponse(false, 400, "Validation error", null, [
+                'purpose' => ["Business Clearance is for Business purpose only"]
+            ]);
         }
 
         return null;
