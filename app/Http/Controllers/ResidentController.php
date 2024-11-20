@@ -7,14 +7,44 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ResidentRequest;
 use App\Http\Resources\ResidentResource;
 use App\Models\Sitio;
+use Carbon\Carbon;
 use Illuminate\Support\Str;
 
 class ResidentController extends Controller
 {
     public function index()
     {
-        $resident = Resident::where('archive_status', false)->get();
+        $resident = Resident::where('archive_status', false)->orderBy('lastname', 'ASC')->get();
         return $this->jsonResponse(true, 200, 'Data retrieved successfully', ResidentResource::collection($resident));
+    }
+
+    public function statistics()
+    {
+        $maleCount = $this->gender('Male');
+        $femaleCount = $this->gender('Female');
+        $seniorCitizenCount = Resident::whereDate('birthdate', '<=', Carbon::now()->subYears(60))->count();
+        $voterCount = Resident::where('archive_status', false)
+            ->where('voter_status', 'Voter')
+            ->count();
+        $householdCount = Resident::whereRaw('LOWER(house_number) != ?', ['none'])
+            ->distinct('house_number')->count('house_number');
+
+        $population = Sitio::withCount('residents')
+            ->get()
+            ->pluck('residents_count', 'name')
+            ->toArray();
+        $response = [
+            'statistics' => [
+                "Male" => $maleCount,
+                "Female" => $femaleCount,
+                "Senior Citizen" => $seniorCitizenCount,
+                "Voter" => $voterCount,
+                "Household" => $householdCount
+            ],
+            'population' => $population
+        ];
+
+        return $this->jsonResponse(true, 200, 'Data retrieved successfully', $response);
     }
 
     public function archive_list()
@@ -133,6 +163,13 @@ class ResidentController extends Controller
 
         $resident->delete();
         return $this->jsonResponse(true, 200, 'Resident deleted successfully');
+    }
+
+    private function gender(string $type)
+    {
+        return Resident::where('archive_status', false)
+            ->where('gender', $type)
+            ->count();
     }
 
     private function isExist($request, $id = null)

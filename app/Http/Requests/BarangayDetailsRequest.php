@@ -33,9 +33,16 @@ class BarangayDetailsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string'],
+            'name' => ['required', 'regex:/^[a-zA-Z0-9\s]+$/'],
             'image' => ['nullable', 'string'],
             'logo' => ['nullable', 'string']
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'name.regex' => 'The barangay name may only contain letters, numbers or spaces',
         ];
     }
 }

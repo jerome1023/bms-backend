@@ -23,6 +23,12 @@ class Official extends Model
         'archive_status'
     ];
 
+    public function getFullNameAttribute()
+    {
+        $prefix = in_array($this->position, ['Kalihim', 'Ingat Yaman']) ? null : 'Hon. ';
+        return "{$prefix}{$this->firstname} {$this->middlename} {$this->lastname}";
+    }
+
     public function blotters()
     {
         return $this->hasMany(Blotter::class, 'namagitan');

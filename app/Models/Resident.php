@@ -31,6 +31,11 @@ class Resident extends Model
         'archive_status'
     ];
 
+    public function getFullNameAttribute()
+    {
+        return "{$this->lastname}, {$this->firstname} {$this->middlename}";
+    }
+
     public function sitio()
     {
         return $this->belongsTo(Sitio::class, 'sitio_id');

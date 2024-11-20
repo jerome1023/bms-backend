@@ -36,11 +36,18 @@ class DocumentRequest extends FormRequest
         return [
             'name' => [
                 'required',
-                'string',
+                'regex:/^[a-zA-Z\s\(\)]+$/',
                 'max:255',
                 Rule::unique('documents')->ignore($this->id),
             ],
             'price' => 'required|integer',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'name.regex' => 'The document name may only contain letters, parenthesis or spaces',
         ];
     }
 }

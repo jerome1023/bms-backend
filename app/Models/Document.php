@@ -10,7 +10,7 @@ class Document extends Model
 {
     use HasFactory, HasUuids;
 
-    public $incrementing = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'id',

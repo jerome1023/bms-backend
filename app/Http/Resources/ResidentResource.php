@@ -19,7 +19,7 @@ class ResidentResource extends JsonResource
             'firstname' => $this->firstname,
             'middlename' => $this->middlename,
             'lastname' => $this->lastname,
-            'fullname' => "{$this->lastname}, {$this->firstname} {$this->middlename}",
+            'fullname' => $this->full_name,
             'gender' => $this->gender,
             'birthdate' => $this->birthdate,
             'birthplace' => $this->birthplace,

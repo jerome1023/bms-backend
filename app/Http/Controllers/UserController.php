@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use App\Http\Resources\UserResource;
 use App\Models\Role;
 use App\Models\User;
+use App\Rules\SingleNameRegex;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -70,8 +71,8 @@ class UserController extends Controller
         }
 
         $validateRules = [
-            'firstname' => 'required|string',
-            'lastname' => 'required|string',
+            'firstname' => ['required', new SingleNameRegex, 'max:255'],
+            'lastname' => ['required', new SingleNameRegex, 'max:255'],
             'email' => 'required|email|unique:users,email,' . $user->id,
             'password' => 'nullable|min:6|same:confirm_password',
             'confirm_password' => 'nullable|min:6',

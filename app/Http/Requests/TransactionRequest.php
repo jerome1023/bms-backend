@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\FullnameRegex;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Foundation\Http\FormRequest;
@@ -33,7 +34,7 @@ class TransactionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'fullname' => ['required', 'string', 'max:255'],
+            'fullname' => ['required', new FullnameRegex, 'max:255'],
             'user_id' => ['nullable', 'string', 'max:255'],
             'document' => ['required', 'string', 'max:255'],
             'purpose' => ['required', 'string', 'max:255'],

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\FullnameRegex;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Foundation\Http\FormRequest;
@@ -33,8 +34,8 @@ class Request extends FormRequest
     public function rules(): array
     {
         return [
-            'fullname' => 'required|string|max:255',
-            'age' => 'required|integer',
+            'fullname' => ['required', new FullnameRegex, 'max:255'],
+            'age' => 'required|numeric',
             'document' => 'required|string|max:255',
             'purpose' => 'required|string|max:255',
             'sitio' => 'required|string|max:255',

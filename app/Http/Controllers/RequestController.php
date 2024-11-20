@@ -27,7 +27,8 @@ class RequestController extends Controller
         }
 
         $query = Request::where('status', $status)
-            ->where('archive_status', false);
+            ->where('archive_status', false)
+            ->orderBy('created_at');
 
         if ($user->role->name !== "Administrator") {
             $query->where('user_id', $user->id);
@@ -266,16 +267,16 @@ class RequestController extends Controller
                 'Business Clearance (D)' => [500000, PHP_INT_MAX],
             ];
 
-            if(in_array($document->name, $businessDocuments)){
+            if (in_array($document->name, $businessDocuments)) {
                 $validator = Validator::make($request->all(), [
                     'income' => 'required|integer'
                 ]);
-    
+
                 if ($validator->fails()) {
                     return $this->jsonResponse(false, 400, 'Validation error', null, $validator->errors());
                 }
             }
-            
+
             // Check if the selected document matches the income range
             $correctDocument = null;
             foreach ($businessClearances as $clearanceName => [$minIncome, $maxIncome]) {
@@ -292,10 +293,10 @@ class RequestController extends Controller
                         'document' => ["The selected document does not match the income range. The correct document for your income is: $correctDocument"]
                     ]);
                 }
-            } 
+            }
         }
-        
-        if(in_array($document->name, $businessDocuments) && $request->purpose != "Business" ){
+
+        if (in_array($document->name, $businessDocuments) && $request->purpose != "Business") {
             return $this->jsonResponse(false, 400, "Validation error", null, [
                 'purpose' => ["Business Clearance is for Business purpose only"]
             ]);

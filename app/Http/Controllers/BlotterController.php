@@ -14,7 +14,9 @@ class BlotterController extends Controller
 {
     public function index()
     {
-        $blotters = Blotter::where('archive_status', false)->get();
+        $blotters = Blotter::where('archive_status', false)
+            ->orderBy('created_at')
+            ->get();
         return $this->jsonResponse(true, 200, 'Data retrieved successfully', BlotterResource::collection($blotters));
     }
 
@@ -31,11 +33,11 @@ class BlotterController extends Controller
             "complainant" => $request->complainant,
             "complainant_age" => $request->complainant_age,
             "complainant_address" => $request->complainant_address,
-            "complainant_contact_number" => $request->complainant_contact_number,
+            "complainant_contact_number" => str_replace('-', '', $request->complainant_contact_number),
             "complainee" => $request->complainee,
             "complainee_age" => $request->complainee_age,
             "complainee_address" => $request->complainee_address,
-            "complainee_contact_number" => $request->complainee_contact_number,
+            "complainee_contact_number" => str_replace('-', '', $request->complainee_contact_number),
             "date" => $request->date,
             "complain" => $request->complain,
             "status" => $request->status ?? 'unsolve',
@@ -67,11 +69,11 @@ class BlotterController extends Controller
             "complainant" => $request->complainant,
             "complainant_age" => $request->complainant_age,
             "complainant_address" => $request->complainant_address,
-            "complainant_contact_number" => $request->complainant_contact_number,
+            "complainant_contact_number" => str_replace('-', '', $request->complainant_contact_number),
             "complainee" => $request->complainee,
             "complainee_age" => $request->complainee_age,
             "complainee_address" => $request->complainee_address,
-            "complainee_contact_number" => $request->complainee_contact_number,
+            "complainee_contact_number" => str_replace('-', '', $request->complainant_contact_number),
             "date" => $request->date,
             "complain" => $request->complain,
             "status" => $request->status,

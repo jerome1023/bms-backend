@@ -12,7 +12,18 @@ class OfficialController extends Controller
 {
     public function index()
     {
-        $official = Official::where('archive_status', false)->get();
+        $official = Official::where('archive_status', false)
+            ->orderByRaw('
+                CASE 
+                    WHEN position = \'Punong Barangay\' THEN 1
+                    WHEN position = \'Kagawad\' THEN 2
+                    WHEN position = \'Sk Chairman\' THEN 3
+                    WHEN position = \'Kalihim\' THEN 4
+                    WHEN position = \'Ingat Yaman\' THEN 5
+                    ELSE 6
+                END
+            ')
+            ->get();
         return $this->jsonResponse(true, 201, 'Data retrieved successfully', OfficialResource::collection($official));
     }
 

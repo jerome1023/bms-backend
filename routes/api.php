@@ -70,6 +70,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
     Route::controller(ResidentController::class)->prefix('/resident')->group(function () {
         Route::get('/list', 'index');
+        Route::get('/statistics', 'statistics');
         Route::get('/archive_list', 'archive_list');
         Route::get('/view/{id}', 'show');
         Route::post('/create', 'store');

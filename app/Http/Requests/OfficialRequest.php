@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\SingleNameRegex;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Foundation\Http\FormRequest;
@@ -33,12 +34,12 @@ class OfficialRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'firstname' => 'required|string|max:255',
-            'middlename' => 'required|string|max:255',
-            'lastname' => 'required|string|max:255',
+            'firstname' => ['required', new SingleNameRegex, 'max:255'],
+            'middlename' => ['required', new SingleNameRegex, 'max:255'],
+            'lastname' => ['required', new SingleNameRegex, 'max:255'],
             'gender' => 'required|string|max:255',
             'position' => 'required|string|max:255',
-            'birthdate' => 'required|date_format:Y-m-d',
+            'birthdate' => 'required|date_format:Y-m-d|before:today',
             'start_term' => 'required|date_format:Y-m-d',
             'end_term' => 'required|date_format:Y-m-d',
             'archive_status' => 'nullable|boolean'
